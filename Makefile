@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint
+CMAKE_SOURCE_DIR = /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint
+CMAKE_BINARY_DIR = /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/CMakeFiles /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/CMakeFiles /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -177,6 +177,30 @@ src/entrypoint.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/entrypoint.cpp.s
 .PHONY : src/entrypoint.cpp.s
 
+src/rotationFinder.o: src/rotationFinder.cpp.o
+.PHONY : src/rotationFinder.o
+
+# target to build an object file
+src/rotationFinder.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o
+.PHONY : src/rotationFinder.cpp.o
+
+src/rotationFinder.i: src/rotationFinder.cpp.i
+.PHONY : src/rotationFinder.i
+
+# target to preprocess a source file
+src/rotationFinder.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.i
+.PHONY : src/rotationFinder.cpp.i
+
+src/rotationFinder.s: src/rotationFinder.cpp.s
+.PHONY : src/rotationFinder.s
+
+# target to generate assembly for a file
+src/rotationFinder.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.s
+.PHONY : src/rotationFinder.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -192,6 +216,9 @@ help:
 	@echo "... src/entrypoint.o"
 	@echo "... src/entrypoint.i"
 	@echo "... src/entrypoint.s"
+	@echo "... src/rotationFinder.o"
+	@echo "... src/rotationFinder.i"
+	@echo "... src/rotationFinder.s"
 .PHONY : help
 
 

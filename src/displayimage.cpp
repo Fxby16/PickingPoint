@@ -4,16 +4,16 @@
  
 void DisplayImage::Open(const std::string& path)
 {
-    cv::Mat image = cv::imread(path, cv::IMREAD_COLOR);
+    m_Image = cv::imread(path, cv::IMREAD_COLOR);
 
-    if(!image.data)
+    if(!m_Image.data)
     {
         printf("No image data\n");
         return;
     }
 
     cv::namedWindow("Display Image", cv::WINDOW_AUTOSIZE);
-    cv::imshow("Display Image", image);
+    cv::imshow("Display Image", m_Image);
 
     cv::waitKey(0);
 }

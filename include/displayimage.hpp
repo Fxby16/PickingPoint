@@ -11,5 +11,5 @@ public:
     void Open(const std::string& path);
 
 private:
-    cv::Mat image;
+    cv::Mat m_Image;
 };

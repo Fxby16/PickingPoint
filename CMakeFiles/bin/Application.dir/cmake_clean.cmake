@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/bin/Application.dir/src/displayimage.cpp.o.d"
   "CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o"
   "CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o.d"
+  "CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o"
+  "CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o.d"
   "bin/Application"
   "bin/Application.pdb"
 )

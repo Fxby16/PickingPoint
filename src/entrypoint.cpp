@@ -1,10 +1,10 @@
-#include <displayimage.hpp>
+#include <rotationFinder.hpp>
 
 int main(int argc, char** argv)
 {
-    DisplayImage displayImage;
+    RotationFinder rotationFinder;
     
-    displayImage.Open("assets/chiave_candela.png");
+    rotationFinder.Start("assets/chiave_candela.png");
 
     return 0;
 }

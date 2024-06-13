@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/include -isystem /usr/local/include/opencv4
+CXX_INCLUDES = -I/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/include -isystem /usr/local/include/opencv4
 
 CXX_FLAGS = 
 

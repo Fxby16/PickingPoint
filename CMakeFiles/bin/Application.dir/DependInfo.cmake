@@ -8,8 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/src/displayimage.cpp" "CMakeFiles/bin/Application.dir/src/displayimage.cpp.o" "gcc" "CMakeFiles/bin/Application.dir/src/displayimage.cpp.o.d"
-  "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/src/entrypoint.cpp" "CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o" "gcc" "CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o.d"
+  "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/displayimage.cpp" "CMakeFiles/bin/Application.dir/src/displayimage.cpp.o" "gcc" "CMakeFiles/bin/Application.dir/src/displayimage.cpp.o.d"
+  "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/entrypoint.cpp" "CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o" "gcc" "CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o.d"
+  "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/rotationFinder.cpp" "CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o" "gcc" "CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o.d"
   )
 
 # Targets to which this target links.

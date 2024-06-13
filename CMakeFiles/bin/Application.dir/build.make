@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint
+CMAKE_SOURCE_DIR = /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint
+CMAKE_BINARY_DIR = /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint
 
 # Include any dependencies generated for this target.
 include CMakeFiles/bin/Application.dir/depend.make
@@ -72,41 +72,57 @@ include CMakeFiles/bin/Application.dir/flags.make
 CMakeFiles/bin/Application.dir/src/displayimage.cpp.o: CMakeFiles/bin/Application.dir/flags.make
 CMakeFiles/bin/Application.dir/src/displayimage.cpp.o: src/displayimage.cpp
 CMakeFiles/bin/Application.dir/src/displayimage.cpp.o: CMakeFiles/bin/Application.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/bin/Application.dir/src/displayimage.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bin/Application.dir/src/displayimage.cpp.o -MF CMakeFiles/bin/Application.dir/src/displayimage.cpp.o.d -o CMakeFiles/bin/Application.dir/src/displayimage.cpp.o -c /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/src/displayimage.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/bin/Application.dir/src/displayimage.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bin/Application.dir/src/displayimage.cpp.o -MF CMakeFiles/bin/Application.dir/src/displayimage.cpp.o.d -o CMakeFiles/bin/Application.dir/src/displayimage.cpp.o -c /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/displayimage.cpp
 
 CMakeFiles/bin/Application.dir/src/displayimage.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/bin/Application.dir/src/displayimage.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/src/displayimage.cpp > CMakeFiles/bin/Application.dir/src/displayimage.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/displayimage.cpp > CMakeFiles/bin/Application.dir/src/displayimage.cpp.i
 
 CMakeFiles/bin/Application.dir/src/displayimage.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/bin/Application.dir/src/displayimage.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/src/displayimage.cpp -o CMakeFiles/bin/Application.dir/src/displayimage.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/displayimage.cpp -o CMakeFiles/bin/Application.dir/src/displayimage.cpp.s
 
 CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o: CMakeFiles/bin/Application.dir/flags.make
 CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o: src/entrypoint.cpp
 CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o: CMakeFiles/bin/Application.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o -MF CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o.d -o CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o -c /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/src/entrypoint.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o -MF CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o.d -o CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o -c /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/entrypoint.cpp
 
 CMakeFiles/bin/Application.dir/src/entrypoint.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/bin/Application.dir/src/entrypoint.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/src/entrypoint.cpp > CMakeFiles/bin/Application.dir/src/entrypoint.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/entrypoint.cpp > CMakeFiles/bin/Application.dir/src/entrypoint.cpp.i
 
 CMakeFiles/bin/Application.dir/src/entrypoint.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/bin/Application.dir/src/entrypoint.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/src/entrypoint.cpp -o CMakeFiles/bin/Application.dir/src/entrypoint.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/entrypoint.cpp -o CMakeFiles/bin/Application.dir/src/entrypoint.cpp.s
+
+CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o: CMakeFiles/bin/Application.dir/flags.make
+CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o: src/rotationFinder.cpp
+CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o: CMakeFiles/bin/Application.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o -MF CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o.d -o CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o -c /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/rotationFinder.cpp
+
+CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/rotationFinder.cpp > CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.i
+
+CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/rotationFinder.cpp -o CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.s
 
 # Object files for target bin/Application
 bin/Application_OBJECTS = \
 "CMakeFiles/bin/Application.dir/src/displayimage.cpp.o" \
-"CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o"
+"CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o" \
+"CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o"
 
 # External object files for target bin/Application
 bin/Application_EXTERNAL_OBJECTS =
 
 bin/Application: CMakeFiles/bin/Application.dir/src/displayimage.cpp.o
 bin/Application: CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o
+bin/Application: CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o
 bin/Application: CMakeFiles/bin/Application.dir/build.make
 bin/Application: /usr/local/lib/libopencv_gapi.so.4.10.0
 bin/Application: /usr/local/lib/libopencv_stitching.so.4.10.0
@@ -162,7 +178,7 @@ bin/Application: /usr/local/lib/libopencv_photo.so.4.10.0
 bin/Application: /usr/local/lib/libopencv_imgproc.so.4.10.0
 bin/Application: /usr/local/lib/libopencv_core.so.4.10.0
 bin/Application: CMakeFiles/bin/Application.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable bin/Application"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable bin/Application"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/bin/Application.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -174,6 +190,6 @@ CMakeFiles/bin/Application.dir/clean:
 .PHONY : CMakeFiles/bin/Application.dir/clean
 
 CMakeFiles/bin/Application.dir/depend:
-	cd /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/CMakeFiles/bin/Application.dir/DependInfo.cmake --color=$(COLOR)
+	cd /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/CMakeFiles/bin/Application.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/bin/Application.dir/depend
 

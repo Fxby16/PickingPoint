@@ -1,7 +1,7 @@
 CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o: \
- /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/src/entrypoint.cpp \
+ /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/src/entrypoint.cpp \
  /usr/include/stdc-predef.h \
- /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/include/displayimage.hpp \
+ /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/include/rotationFinder.hpp \
  /usr/local/include/opencv4/opencv2/opencv.hpp \
  /usr/local/include/opencv4/opencv2/opencv_modules.hpp \
  /usr/local/include/opencv4/opencv2/core.hpp \
