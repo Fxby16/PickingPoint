@@ -1,0 +1,17 @@
+# Target labels
+ Extra
+ opencv_dnn_superres
+ PerfTest
+# Source files and their labels
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/dnn_superres/perf/perf_dnn_superres.cpp
+ Extra
+ opencv_dnn_superres
+ PerfTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/dnn_superres/perf/perf_main.cpp
+ Extra
+ opencv_dnn_superres
+ PerfTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/dnn_superres/perf/perf_precomp.hpp
+ Extra
+ opencv_dnn_superres
+ PerfTest

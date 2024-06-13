@@ -1,0 +1,21 @@
+# Target labels
+ Extra
+ opencv_mcc
+ AccuracyTest
+# Source files and their labels
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/mcc/test/test_ccm.cpp
+ Extra
+ opencv_mcc
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/mcc/test/test_main.cpp
+ Extra
+ opencv_mcc
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/mcc/test/test_mcc.cpp
+ Extra
+ opencv_mcc
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/mcc/test/test_precomp.hpp
+ Extra
+ opencv_mcc
+ AccuracyTest

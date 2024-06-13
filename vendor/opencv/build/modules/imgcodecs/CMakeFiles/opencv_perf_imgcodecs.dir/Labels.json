@@ -1,0 +1,51 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv-4.x/modules/imgcodecs/perf/perf_jpeg.cpp",
+			"labels" : 
+			[
+				"Main",
+				"opencv_imgcodecs",
+				"PerfTest"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv-4.x/modules/imgcodecs/perf/perf_main.cpp",
+			"labels" : 
+			[
+				"Main",
+				"opencv_imgcodecs",
+				"PerfTest"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv-4.x/modules/imgcodecs/perf/perf_png.cpp",
+			"labels" : 
+			[
+				"Main",
+				"opencv_imgcodecs",
+				"PerfTest"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv-4.x/modules/imgcodecs/perf/perf_precomp.hpp",
+			"labels" : 
+			[
+				"Main",
+				"opencv_imgcodecs",
+				"PerfTest"
+			]
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"Main",
+			"opencv_imgcodecs",
+			"PerfTest"
+		],
+		"name" : "opencv_perf_imgcodecs"
+	}
+}

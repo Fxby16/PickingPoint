@@ -1,0 +1,25 @@
+# Target labels
+ Extra
+ opencv_structured_light
+ AccuracyTest
+# Source files and their labels
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/structured_light/test/test_faps.cpp
+ Extra
+ opencv_structured_light
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/structured_light/test/test_getProjPixel.cpp
+ Extra
+ opencv_structured_light
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/structured_light/test/test_main.cpp
+ Extra
+ opencv_structured_light
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/structured_light/test/test_plane.cpp
+ Extra
+ opencv_structured_light
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/structured_light/test/test_precomp.hpp
+ Extra
+ opencv_structured_light
+ AccuracyTest

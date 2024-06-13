@@ -1,0 +1,57 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/signal/include/opencv2/signal.hpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_signal",
+				"Module"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/signal/include/opencv2/signal/signal_resample.hpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_signal",
+				"Module"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/signal/src/signal_resample.cpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_signal",
+				"Module"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/signal/src/precomp.hpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_signal",
+				"Module"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/build/cvconfig.h"
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/build/opencv2/opencv_modules.hpp"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"Extra",
+			"opencv_signal",
+			"Module"
+		],
+		"name" : "opencv_signal"
+	}
+}

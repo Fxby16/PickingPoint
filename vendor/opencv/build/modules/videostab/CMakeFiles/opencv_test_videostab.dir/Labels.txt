@@ -1,0 +1,21 @@
+# Target labels
+ Extra
+ opencv_videostab
+ AccuracyTest
+# Source files and their labels
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/videostab/test/test_main.cpp
+ Extra
+ opencv_videostab
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/videostab/test/test_motion_estimation.cpp
+ Extra
+ opencv_videostab
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/videostab/test/test_stabilizer.cpp
+ Extra
+ opencv_videostab
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/videostab/test/test_precomp.hpp
+ Extra
+ opencv_videostab
+ AccuracyTest

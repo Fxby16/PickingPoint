@@ -1,0 +1,42 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/saliency/test/test_main.cpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_saliency",
+				"AccuracyTest"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/saliency/test/test_static_saliency_spectral_residual.cpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_saliency",
+				"AccuracyTest"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/saliency/test/test_precomp.hpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_saliency",
+				"AccuracyTest"
+			]
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"Extra",
+			"opencv_saliency",
+			"AccuracyTest"
+		],
+		"name" : "opencv_test_saliency"
+	}
+}

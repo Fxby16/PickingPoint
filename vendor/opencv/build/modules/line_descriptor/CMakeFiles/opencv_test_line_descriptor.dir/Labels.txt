@@ -1,0 +1,25 @@
+# Target labels
+ Extra
+ opencv_line_descriptor
+ AccuracyTest
+# Source files and their labels
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/line_descriptor/test/test_descriptors_regression.cpp
+ Extra
+ opencv_line_descriptor
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/line_descriptor/test/test_detector_regression.cpp
+ Extra
+ opencv_line_descriptor
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/line_descriptor/test/test_main.cpp
+ Extra
+ opencv_line_descriptor
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/line_descriptor/test/test_matcher_regression.cpp
+ Extra
+ opencv_line_descriptor
+ AccuracyTest
+/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/line_descriptor/test/test_precomp.hpp
+ Extra
+ opencv_line_descriptor
+ AccuracyTest

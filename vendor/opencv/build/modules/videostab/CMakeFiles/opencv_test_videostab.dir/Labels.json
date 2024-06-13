@@ -1,0 +1,51 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/videostab/test/test_main.cpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_videostab",
+				"AccuracyTest"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/videostab/test/test_motion_estimation.cpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_videostab",
+				"AccuracyTest"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/videostab/test/test_stabilizer.cpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_videostab",
+				"AccuracyTest"
+			]
+		},
+		{
+			"file" : "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/WorkingPickingPoint/vendor/opencv/opencv_contrib-4.x/modules/videostab/test/test_precomp.hpp",
+			"labels" : 
+			[
+				"Extra",
+				"opencv_videostab",
+				"AccuracyTest"
+			]
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"Extra",
+			"opencv_videostab",
+			"AccuracyTest"
+		],
+		"name" : "opencv_test_videostab"
+	}
+}
