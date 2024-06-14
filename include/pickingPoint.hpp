@@ -18,6 +18,8 @@ public:
     unsigned int GetPixelCount(cv::Rect& rect);
     void DrawHeatMap(const std::string& path);
 
+    cv::Point Raycast(cv::Point startingPoint, cv::Point direction);
+
     std::pair<size_t, size_t> FindMinCell();
     std::pair<size_t, size_t> FindMaxCell();
 

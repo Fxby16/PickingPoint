@@ -3,6 +3,8 @@
 #include <vector>
 #include <cmath>
 #include <limits>
+
+#define DEBUG
  
 void PickingPoint::Start(const std::string& path)
 {
@@ -55,7 +57,7 @@ void PickingPoint::Start(const std::string& path)
             angle = -angle;
         }
 
-#ifdef DEBUG
+#ifdef DRAWDEBUG
         // Draw the rectangle and label on the image
         cv::Point2f pt[4];
         rect.points(pt);
@@ -103,7 +105,7 @@ void PickingPoint::Start(const std::string& path)
     fprintf(stderr, "Extracting Cells...\n");
 #endif
 
-    ExtractCells(5, m_Cropped);
+    ExtractCells(4, m_Cropped);
 
 #ifdef DEBUG
     fprintf(stderr, "Extracted Cells\n");
@@ -127,12 +129,32 @@ void PickingPoint::Start(const std::string& path)
 #endif
 
     DrawHeatMap(path);
-    cv::circle(m_Cropped, cv::Point(r.x + r.width / 2, r.y + r.height / 2), 2, cv::Scalar(0, 0, 255), -1);
+    cv::Point pickPoint = cv::Point(r.x + r.width / 2, r.y + r.height / 2);
+
+    cv::Point y0 = Raycast(pickPoint, cv::Point(0, 1)); // Sopra
+    cv::Point y1 = Raycast(pickPoint, cv::Point(0, -1)); //sotto
+    cv::Point x0 = Raycast(pickPoint, cv::Point(1, 0)); // destra
+    cv::Point x1 = Raycast(pickPoint, cv::Point(-1, 0));    // Sinis
+
+#ifdef DRAWDEBUG
+    cv::circle(m_Cropped, y0, 2, cv::Scalar(255, 0, 0), -1);
+    cv::circle(m_Cropped, y1, 2, cv::Scalar(255, 0, 0), -1);
+    cv::circle(m_Cropped, x0, 2, cv::Scalar(255, 0, 0), -1);
+    cv::circle(m_Cropped, x1, 2, cv::Scalar(255, 0, 0), -1);
+#endif
+
+    if (std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x)) {
+        pickPoint = cv::Point((x0.x + x1.x) / 2, pickPoint.y);
+    } else {
+        pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
+    }
+
+    cv::circle(m_Cropped, pickPoint, 2, cv::Scalar(0, 0, 255), -1);
     cv::imwrite(std::string("output/") + path.substr(path.find_last_of("/")), m_Cropped);
     
-    fprintf(stderr, "Writed Image, Destroying WIndows... \n");
+    fprintf(stderr, "Writed Image, Destroying Windows... \n");
 
-    //cv::waitKey(0);
+    //cv::waitKey(0); 
     cv::destroyAllWindows();
 
     fprintf(stderr, "Destroyed All Windows... \n");
@@ -161,7 +183,7 @@ void PickingPoint::ExtractCells(size_t cell_size, cv::Mat img)
             int k = x*y + x;
             cv::Rect grid_rect(x, y, cell_size, cell_size);
             v.push_back({0, grid_rect});
-#ifdef DEBUG
+#ifdef DRAWDEBUG
             cv::rectangle(img, grid_rect, cv::Scalar(0, 255, 0), 1);
 #endif
         }
@@ -170,7 +192,7 @@ void PickingPoint::ExtractCells(size_t cell_size, cv::Mat img)
             int k = x*y + x;
             cv::Rect grid_rect(x, y, width - x, cell_size);
             v.push_back({0, grid_rect});
-#ifdef DEBUG
+#ifdef DRAWDEBUG
             cv::rectangle(img, grid_rect, cv::Scalar(0, 255, 0), 1);
 #endif
         }
@@ -186,7 +208,7 @@ void PickingPoint::ExtractCells(size_t cell_size, cv::Mat img)
             int k = x*y + x;
             cv::Rect grid_rect(x, y, cell_size, height - y);
             v.push_back({0, grid_rect});
-#ifdef DEBUG
+#ifdef DRAWDEBUG
             cv::rectangle(img, grid_rect, cv::Scalar(0, 255, 0), 1);
 #endif
         }
@@ -195,7 +217,7 @@ void PickingPoint::ExtractCells(size_t cell_size, cv::Mat img)
             int k = x*y + x;
             cv::Rect grid_rect(x, y, width - x, height - y);
             v.push_back({0, grid_rect});
-#ifdef DEBUG
+#ifdef DRAWDEBUG
             cv::rectangle(img, grid_rect, cv::Scalar(0, 255, 0), 1);
 #endif
 
@@ -226,6 +248,57 @@ std::pair<size_t, size_t> PickingPoint::FindMaxCell()
     return {y, x};
 }
 
+cv::Point PickingPoint::Raycast(cv::Point startingPoint, cv::Point direction) {
+    cv::Point currentPoint = startingPoint;
+    cv::Point savedPoint = startingPoint;
+
+    bool prev_color_black;
+    cv::Vec3b color = m_Cropped.at<cv::Vec3b>(currentPoint);
+
+    if(color[0] == 0 && color[1] == 0 && color[2] == 0)
+    {
+        prev_color_black = true;
+    }
+    else
+    {
+        prev_color_black = false;
+    }
+
+    while (currentPoint.x >= 0 && currentPoint.x < m_Cropped.cols && currentPoint.y >= 0 && currentPoint.y < m_Cropped.rows) {
+        color = m_Cropped.at<cv::Vec3b>(currentPoint);
+
+#ifdef DEBUG
+        //fprintf(stderr, "Color: %d %d %d\n", color[0], color[1], color[2]);
+#endif
+
+        if (color[0] == 0 && color[1] == 0 && color[2] == 0) {
+            if(prev_color_black == false)
+            {
+                savedPoint = currentPoint;
+            }
+            prev_color_black = true;
+            
+#ifdef DEBUG
+            //perror("Saved point\n");
+#endif
+
+        }
+        else
+        {
+            prev_color_black = false;
+        }
+
+        currentPoint += direction;
+    }
+
+    if (!prev_color_black) {
+        fprintf(stderr, "Saved Point Outside\n");
+        savedPoint = currentPoint;
+    }
+    
+    return savedPoint;
+}
+
 void PickingPoint::DrawHeatMap(const std::string& path) {
     m_HeatMap = m_Cropped.clone();
 
@@ -242,7 +315,7 @@ void PickingPoint::DrawHeatMap(const std::string& path) {
         }
     }
 
-    fprintf(stderr, "Writing Heartmap... %s\n", (std::string("output/") + std::string("heatmap_") + path.substr(path.find_last_of("/") + 1)).c_str());
+    fprintf(stderr, "Writing Heatmap... %s\n", (std::string("output/") + std::string("heatmap_") + path.substr(path.find_last_of("/") + 1)).c_str());
     cv::imwrite(std::string("output/") + std::string("heatmap_") + path.substr(path.find_last_of("/") + 1), m_HeatMap);
 }
 
@@ -255,10 +328,6 @@ void PickingPoint::HandleCell(std::pair<double, cv::Rect>& cell, int row, int co
             cell.first += GetPixelCount(m_Cells[i][j].second) * GetDistance(row, col, i, j);
         }
     }
-
-#ifdef DEBUG
-    fprintf(stderr, "%lf ", cell.first);
-#endif
 }
 
 double PickingPoint::GetDistance(int x1, int y1, int x2, int y2)
