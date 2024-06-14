@@ -153,29 +153,29 @@ src/entryPoint.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/entryPoint.cpp.s
 .PHONY : src/entryPoint.cpp.s
 
-src/rotationFinder.o: src/rotationFinder.cpp.o
-.PHONY : src/rotationFinder.o
+src/pickingPoint.o: src/pickingPoint.cpp.o
+.PHONY : src/pickingPoint.o
 
 # target to build an object file
-src/rotationFinder.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.o
-.PHONY : src/rotationFinder.cpp.o
+src/pickingPoint.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/pickingPoint.cpp.o
+.PHONY : src/pickingPoint.cpp.o
 
-src/rotationFinder.i: src/rotationFinder.cpp.i
-.PHONY : src/rotationFinder.i
+src/pickingPoint.i: src/pickingPoint.cpp.i
+.PHONY : src/pickingPoint.i
 
 # target to preprocess a source file
-src/rotationFinder.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.i
-.PHONY : src/rotationFinder.cpp.i
+src/pickingPoint.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/pickingPoint.cpp.i
+.PHONY : src/pickingPoint.cpp.i
 
-src/rotationFinder.s: src/rotationFinder.cpp.s
-.PHONY : src/rotationFinder.s
+src/pickingPoint.s: src/pickingPoint.cpp.s
+.PHONY : src/pickingPoint.s
 
 # target to generate assembly for a file
-src/rotationFinder.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/rotationFinder.cpp.s
-.PHONY : src/rotationFinder.cpp.s
+src/pickingPoint.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/pickingPoint.cpp.s
+.PHONY : src/pickingPoint.cpp.s
 
 # Help Target
 help:
@@ -189,9 +189,9 @@ help:
 	@echo "... src/entryPoint.o"
 	@echo "... src/entryPoint.i"
 	@echo "... src/entryPoint.s"
-	@echo "... src/rotationFinder.o"
-	@echo "... src/rotationFinder.i"
-	@echo "... src/rotationFinder.s"
+	@echo "... src/pickingPoint.o"
+	@echo "... src/pickingPoint.i"
+	@echo "... src/pickingPoint.s"
 .PHONY : help
 
 
