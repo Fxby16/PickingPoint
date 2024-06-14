@@ -1,3 +1,0 @@
-/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/CMakeFiles/bin/Application.dir
-/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/CMakeFiles/edit_cache.dir
-/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/CMakeFiles/rebuild_cache.dir

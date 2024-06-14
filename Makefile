@@ -129,53 +129,29 @@ bin/Application/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/build
 .PHONY : bin/Application/fast
 
-src/displayimage.o: src/displayimage.cpp.o
-.PHONY : src/displayimage.o
+src/entryPoint.o: src/entryPoint.cpp.o
+.PHONY : src/entryPoint.o
 
 # target to build an object file
-src/displayimage.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/displayimage.cpp.o
-.PHONY : src/displayimage.cpp.o
+src/entryPoint.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/entryPoint.cpp.o
+.PHONY : src/entryPoint.cpp.o
 
-src/displayimage.i: src/displayimage.cpp.i
-.PHONY : src/displayimage.i
-
-# target to preprocess a source file
-src/displayimage.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/displayimage.cpp.i
-.PHONY : src/displayimage.cpp.i
-
-src/displayimage.s: src/displayimage.cpp.s
-.PHONY : src/displayimage.s
-
-# target to generate assembly for a file
-src/displayimage.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/displayimage.cpp.s
-.PHONY : src/displayimage.cpp.s
-
-src/entrypoint.o: src/entrypoint.cpp.o
-.PHONY : src/entrypoint.o
-
-# target to build an object file
-src/entrypoint.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/entrypoint.cpp.o
-.PHONY : src/entrypoint.cpp.o
-
-src/entrypoint.i: src/entrypoint.cpp.i
-.PHONY : src/entrypoint.i
+src/entryPoint.i: src/entryPoint.cpp.i
+.PHONY : src/entryPoint.i
 
 # target to preprocess a source file
-src/entrypoint.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/entrypoint.cpp.i
-.PHONY : src/entrypoint.cpp.i
+src/entryPoint.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/entryPoint.cpp.i
+.PHONY : src/entryPoint.cpp.i
 
-src/entrypoint.s: src/entrypoint.cpp.s
-.PHONY : src/entrypoint.s
+src/entryPoint.s: src/entryPoint.cpp.s
+.PHONY : src/entryPoint.s
 
 # target to generate assembly for a file
-src/entrypoint.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/entrypoint.cpp.s
-.PHONY : src/entrypoint.cpp.s
+src/entryPoint.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bin/Application.dir/build.make CMakeFiles/bin/Application.dir/src/entryPoint.cpp.s
+.PHONY : src/entryPoint.cpp.s
 
 src/rotationFinder.o: src/rotationFinder.cpp.o
 .PHONY : src/rotationFinder.o
@@ -210,12 +186,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... bin/Application"
-	@echo "... src/displayimage.o"
-	@echo "... src/displayimage.i"
-	@echo "... src/displayimage.s"
-	@echo "... src/entrypoint.o"
-	@echo "... src/entrypoint.i"
-	@echo "... src/entrypoint.s"
+	@echo "... src/entryPoint.o"
+	@echo "... src/entryPoint.i"
+	@echo "... src/entryPoint.s"
 	@echo "... src/rotationFinder.o"
 	@echo "... src/rotationFinder.i"
 	@echo "... src/rotationFinder.s"
