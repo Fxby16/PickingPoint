@@ -63,20 +63,10 @@ void PickingPoint::Start(const std::string& path)
         rect.points(pt);
         for (int j = 0; j < 4; j++)
             cv::line(m_Image, pt[j], pt[(j + 1) % 4], cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
-
-        // cv::circle(m_Imag7e, center, 10, cv::Scalar(0, 255, 0), -1);
-
-        angle += 90;
-
-        // cv::circle(m_Image, cv::Point(cv::Vec2i(center.x + 30 * std::cos(angle * CV_PI / 180.0f), center.y + 30 * std::sin(angle * CV_PI / 180.0f))), 10, cv::Scalar(255, 0, 0), -1);
 #endif
 
         printf("Rotation angle %.2f\n", angle);
     }
-
-    //cv::imwrite("min_area_rec_output.jpg", m_Image);
-
-    //ExtractCells(60);
 
     cv::Mat M, rotated;
 
@@ -85,8 +75,8 @@ void PickingPoint::Start(const std::string& path)
     cv::Size rect_size = rect.size;
     
     // thanks to http://felix.abecassis.me/2011/10/opencv-rotation-deskewing/
-    if (rect.angle < -45.) {
-        angle += 90.0;
+    if (rect.angle < -45.0f) {
+        angle += 90.0f;
         cv::swap(rect_size.width, rect_size.height);
     }
     // get the rotation matrix
@@ -98,14 +88,11 @@ void PickingPoint::Start(const std::string& path)
     // crop the resulting image
     cv::getRectSubPix(rotated, rect_size, rect.center, m_Cropped);
 
-    //cv::Point punticino = cv::Point(3, cropped.rows - 30);
-    //cv::Vec3b colors = cropped.at<cv::Vec3b>(punticino);
-
 #ifdef DEBUG
     fprintf(stderr, "Extracting Cells...\n");
 #endif
 
-    ExtractCells(4, m_Cropped);
+    ExtractCells(15, m_Cropped);
 
 #ifdef DEBUG
     fprintf(stderr, "Extracted Cells\n");
@@ -120,7 +107,6 @@ void PickingPoint::Start(const std::string& path)
     }
 
     std::pair<size_t, size_t> min_cell = FindMinCell();
-    //fprintf(stderr, "Celle %lu %lu", m_Cells[min_cell.first][min_cell.second].second.x, m_Cells[min_cell.first][min_cell.second].second.y);
 
     cv::Rect r = m_Cells[min_cell.first][min_cell.second].second;
 
@@ -128,7 +114,8 @@ void PickingPoint::Start(const std::string& path)
     fprintf(stderr, "Writing Image...\n");
 #endif
 
-    DrawHeatMap(path);
+    DrawHeatMap(path); 
+
     cv::Point pickPoint = cv::Point(r.x + r.width / 2, r.y + r.height / 2);
 
     cv::Point y0 = Raycast(pickPoint, cv::Point(0, 1)); // Sopra
@@ -150,11 +137,37 @@ void PickingPoint::Start(const std::string& path)
     }
 
     cv::circle(m_Cropped, pickPoint, 2, cv::Scalar(0, 0, 255), -1);
+
+    cv::Mat M_inv, reverted;
+    cv::Size original_size = m_Image.size();
+
+    // Step 1: Create a new image of the original size
+    cv::Mat new_image = cv::Mat::zeros(original_size, m_Cropped.type());
+
+    // Step 2: Place m_Cropped in this new image at the position corresponding to the original rect
+    cv::Rect original_rect(rect.center.x - rect_size.width / 2, rect.center.y - rect_size.height / 2, rect_size.width, rect_size.height);
+    m_Cropped.copyTo(new_image(original_rect));
+
+    // Step 3: Compute the inverse of M
+    cv::invertAffineTransform(M, M_inv);
+
+    // Step 4: Apply cv::warpAffine with the inverted matrix
+    cv::warpAffine(new_image, reverted, M_inv, original_size, cv::INTER_CUBIC, cv::BORDER_CONSTANT, cv::Scalar(0));
+
+    // Step 5: If the width and height were swapped, swap them back
+    if (rect.angle < -45.0f) {
+        cv::swap(reverted.cols, reverted.rows);
+    }
+
+
+    //cv::circle(reverted, pickPoint, 2, cv::Scalar(0, 0, 255), -1);
+
+    cv::imshow("Image", reverted);
     cv::imwrite(std::string("output/") + path.substr(path.find_last_of("/")), m_Cropped);
     
     fprintf(stderr, "Writed Image, Destroying Windows... \n");
 
-    //cv::waitKey(0); 
+    cv::waitKey(0); 
     cv::destroyAllWindows();
 
     fprintf(stderr, "Destroyed All Windows... \n");
