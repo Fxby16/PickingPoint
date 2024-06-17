@@ -219,7 +219,6 @@ cv::Point PickingPoint::FindColor(cv::Scalar color, cv::Mat& image)
 
 void PickingPoint::ExtractCells(size_t cell_size, cv::Mat img)
 {
-    cv::waitKey(0);
     int width = img.cols;
     int height = img.rows;
 
@@ -242,7 +241,9 @@ void PickingPoint::ExtractCells(size_t cell_size, cv::Mat img)
         std::vector<std::pair<double, cv::Rect>> v;
 
         for (x = 0; x < width - cell_size; x += cell_size) {
-            //fprintf(stderr, "Looping 1 %d %d %d %d %d\n", height - cell_size, height, cell_size, x, y);
+            #ifdef DEBUG
+                fprintf(stderr, "Looping 1 %d %d %d %d %d\n", height - cell_size, height, cell_size, x, y);
+            #endif
             int k = x*y + x;
             cv::Rect grid_rect(x, y, cell_size, cell_size);
             v.push_back({0, grid_rect});
@@ -268,7 +269,9 @@ void PickingPoint::ExtractCells(size_t cell_size, cv::Mat img)
         std::vector<std::pair<double, cv::Rect>> v;
 
         for (x = 0; x < width - cell_size; x += cell_size) {
-            //fprintf(stderr, "Looping 2\n");
+            #ifdef DEBUG
+                fprintf(stderr, "Looping 2\n");
+            #endif
             int k = x*y + x;
             cv::Rect grid_rect(x, y, cell_size, height - y);
             v.push_back({0, grid_rect});
