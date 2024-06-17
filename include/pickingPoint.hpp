@@ -19,6 +19,7 @@ public:
     void DrawHeatMap(const std::string& path);
 
     cv::Point Raycast(cv::Point startingPoint, cv::Point direction);
+    cv::Point FindColor(cv::Scalar color, cv::Mat& image);
 
     std::pair<size_t, size_t> FindMinCell();
     std::pair<size_t, size_t> FindMaxCell();

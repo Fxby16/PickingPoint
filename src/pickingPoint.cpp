@@ -4,8 +4,6 @@
 #include <cmath>
 #include <limits>
 
-#define DEBUG
- 
 void PickingPoint::Start(const std::string& path)
 {
     m_Image = cv::imread(path, cv::IMREAD_COLOR);
@@ -65,7 +63,9 @@ void PickingPoint::Start(const std::string& path)
             cv::line(m_Image, pt[j], pt[(j + 1) % 4], cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
 #endif
 
+#ifdef DEBUG
         printf("Rotation angle %.2f\n", angle);
+#endif
     }
 
     cv::Mat M, rotated;
@@ -92,7 +92,7 @@ void PickingPoint::Start(const std::string& path)
     fprintf(stderr, "Extracting Cells...\n");
 #endif
 
-    ExtractCells(15, m_Cropped);
+    ExtractCells(5, m_Cropped);
 
 #ifdef DEBUG
     fprintf(stderr, "Extracted Cells\n");
@@ -136,7 +136,7 @@ void PickingPoint::Start(const std::string& path)
         pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
     }
 
-    cv::circle(m_Cropped, pickPoint, 2, cv::Scalar(0, 0, 255), -1);
+    m_Cropped.at<cv::Vec3b>(pickPoint) = cv::Vec3b(0, 0, 255);
 
     cv::Mat M_inv, reverted;
     cv::Size original_size = m_Image.size();
@@ -145,32 +145,65 @@ void PickingPoint::Start(const std::string& path)
     cv::Mat new_image = cv::Mat::zeros(original_size, m_Cropped.type());
 
     // Step 2: Place m_Cropped in this new image at the position corresponding to the original rect
-    cv::Rect original_rect(rect.center.x - rect_size.width / 2, rect.center.y - rect_size.height / 2, rect_size.width, rect_size.height);
+    cv::Rect original_rect(std::abs(rect.center.x - rect_size.width / 2), std::abs(rect.center.y - rect_size.height / 2), rect_size.width, rect_size.height);
+    
+#ifdef DEBUG
+    fprintf(stderr, "Original Rect: %d %d %d %d\n", original_rect.x, original_rect.y, original_rect.width, original_rect.height);
+    fprintf(stderr, "Original Size: %d %d\n", original_size.width, original_size.height);
+#endif
+
     m_Cropped.copyTo(new_image(original_rect));
 
     // Step 3: Compute the inverse of M
     cv::invertAffineTransform(M, M_inv);
 
     // Step 4: Apply cv::warpAffine with the inverted matrix
-    cv::warpAffine(new_image, reverted, M_inv, original_size, cv::INTER_CUBIC, cv::BORDER_CONSTANT, cv::Scalar(0));
+    cv::warpAffine(new_image, reverted, M_inv, original_size, cv::INTER_NEAREST, cv::BORDER_CONSTANT, cv::Scalar(0));
 
     // Step 5: If the width and height were swapped, swap them back
     if (rect.angle < -45.0f) {
         cv::swap(reverted.cols, reverted.rows);
     }
 
+    cv::Point newPickingPoint = FindColor(cv::Scalar(0, 0, 255), reverted);
 
-    //cv::circle(reverted, pickPoint, 2, cv::Scalar(0, 0, 255), -1);
-
-    cv::imshow("Image", reverted);
-    cv::imwrite(std::string("output/") + path.substr(path.find_last_of("/")), m_Cropped);
+    fprintf(stderr, "Picking Point: %d %d\n", newPickingPoint.x, newPickingPoint.y);
     
-    fprintf(stderr, "Writed Image, Destroying Windows... \n");
+    cv::circle(reverted, newPickingPoint, 2, cv::Scalar(255, 0, 0), -1);
+    cv::imwrite(std::string("output/") + std::string("result_") + path.substr(path.find_last_of("/") + 1), reverted);
+    //cv::imshow("Image", reverted);
+    cv::imwrite(std::string("output/") + path.substr(path.find_last_of("/")), m_Cropped);
 
-    cv::waitKey(0); 
+#ifdef DEBUG
+    fprintf(stderr, "Writed Image, Destroying Windows... \n");
+#endif
+
+    //cv::waitKey(0); 
     cv::destroyAllWindows();
 
+#ifdef DEBUG
     fprintf(stderr, "Destroyed All Windows... \n");
+#endif
+}
+
+cv::Point PickingPoint::FindColor(cv::Scalar color, cv::Mat& image) 
+{
+    for (int i = 0; i < image.rows; i++) {
+        for (int j = 0; j < image.cols; j++) {
+            cv::Vec3b pixel = image.at<cv::Vec3b>(i, j);
+            
+#ifdef DEBUG
+            if(pixel[0] != 0 && pixel[1] != 0 && pixel[2] != 0)
+                fprintf(stderr, "Color: %d %d %d\n", pixel[0], pixel[1], pixel[2]);
+#endif
+            
+            if (pixel[0] == color[0] && pixel[1] == color[1] && pixel[2] == color[2]) {
+                return cv::Point(j, i);
+            }
+        }
+    }
+
+    return cv::Point(-1, -1);
 }
 
 void PickingPoint::ExtractCells(size_t cell_size, cv::Mat img)
@@ -305,7 +338,9 @@ cv::Point PickingPoint::Raycast(cv::Point startingPoint, cv::Point direction) {
     }
 
     if (!prev_color_black) {
+#ifdef DEBUG
         fprintf(stderr, "Saved Point Outside\n");
+#endif
         savedPoint = currentPoint;
     }
     
@@ -328,7 +363,9 @@ void PickingPoint::DrawHeatMap(const std::string& path) {
         }
     }
 
+#ifdef DEBUG
     fprintf(stderr, "Writing Heatmap... %s\n", (std::string("output/") + std::string("heatmap_") + path.substr(path.find_last_of("/") + 1)).c_str());
+#endif
     cv::imwrite(std::string("output/") + std::string("heatmap_") + path.substr(path.find_last_of("/") + 1), m_HeatMap);
 }
 
