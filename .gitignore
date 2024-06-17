@@ -1,3 +1,5 @@
 .vscode
 CMakeFiles
 output/
+outputOttimizzati/
+outputNonOttimizzati/
