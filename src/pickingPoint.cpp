@@ -144,9 +144,19 @@ void PickingPoint::Start(const std::string& path)
     // Step 1: Create a new image of the original size
     cv::Mat new_image = cv::Mat::zeros(original_size, m_Cropped.type());
 
+    // Get the image size
+    int imgWidth = new_image.cols;
+    int imgHeight = new_image.rows;
+
+    // Calculate the ROI position and size
+    int yValue = std::max(std::min(static_cast<int>(rect.center.y - rect_size.height / 2.0f), imgHeight - rect_size.height), 0);
+    int xValue = std::max(std::min(static_cast<int>(rect.center.x - rect_size.width / 2.0f), imgWidth - rect_size.width), 0);
+
     // Step 2: Place m_Cropped in this new image at the position corresponding to the original rect
-    cv::Rect original_rect(std::abs(rect.center.x - rect_size.width / 2), std::abs(rect.center.y - rect_size.height / 2), rect_size.width, rect_size.height);
+    cv::Rect original_rect(xValue, yValue, rect_size.width, rect_size.height);
     
+    fprintf(stderr, "Smth Big: %d < %d - %d < %d\n", yValue, rect_size.height, xValue, rect_size.width);
+
 #ifdef DEBUG
     fprintf(stderr, "Original Rect: %d %d %d %d\n", original_rect.x, original_rect.y, original_rect.width, original_rect.height);
     fprintf(stderr, "Original Size: %d %d\n", original_size.width, original_size.height);
