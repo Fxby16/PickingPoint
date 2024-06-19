@@ -4,6 +4,7 @@
 #include <cmath>
 #include <limits>
 
+
 void PickingPoint::Start(const std::string& path)
 {
     m_Image = cv::imread(path, cv::IMREAD_COLOR);
@@ -30,30 +31,12 @@ void PickingPoint::Start(const std::string& path)
 
     cv::RotatedRect rect;
 
-    for(size_t i = 0; i < contours.size(); i++)
-    {
-        // Calculate the area of each contour
-        double area = contourArea(contours[i]);
+    double area = contourArea(contours[0]);
 
-        // Get the rotated bounding box
-        rect = cv::minAreaRect(contours[i]);
-        cv::Point2f box[4];
-        rect.points(box);
-
-        // Retrieve the key parameters of the rotated bounding box
-        cv::Point2f center = rect.center;
-        int width = rect.size.width;
-        int height = rect.size.height;
-        float angle = rect.angle;
-
-        if(width < height)
-        {
-            angle = 90 - angle;
-        }
-        else
-        {
-            angle = -angle;
-        }
+    // Get the rotated bounding box
+    rect = cv::minAreaRect(contours[0]);
+    cv::Point2f box[4];
+    rect.points(box);
 
 #ifdef DRAWDEBUG
         // Draw the rectangle and label on the image
@@ -66,12 +49,16 @@ void PickingPoint::Start(const std::string& path)
 #ifdef DEBUG
         printf("Rotation angle %.2f\n", angle);
 #endif
-    }
 
     cv::Mat M, rotated;
 
     // get angle and size from the bounding box
     float angle = rect.angle;
+    float requiredAngle = rect.angle;
+    if (rect.size.width < rect.size.height) {
+        requiredAngle += 90;
+    }
+    
     cv::Size rect_size = rect.size;
     
     // thanks to http://felix.abecassis.me/2011/10/opencv-rotation-deskewing/
@@ -133,11 +120,30 @@ if (m_Cropped.rows == 0 || m_Cropped.cols == 0)
     cv::circle(m_Cropped, x1, 2, cv::Scalar(255, 0, 0), -1);
 #endif
 
+    unsigned int requiredOpening1; // opening for the shortest side
+    unsigned int requiredOpening2; // opening for the longest side
+    float requiredAngle1 = requiredAngle; // angle for the shortest opening
+    float requiredAngle2 = requiredAngle; // angle for the longest opening
+
     if (std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x)) {
         pickPoint = cv::Point((x0.x + x1.x) / 2, pickPoint.y);
+        requiredOpening1 = std::abs(x0.x - x1.x) + 6;
+        requiredOpening2 = std::abs(y0.y - y1.y) + 6;
+        requiredAngle2 += 90;
     } else {
         pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
+        requiredOpening1 = std::abs(y0.y - y1.y) + 6;
+        requiredOpening2 = std::abs(x0.x - x1.x) + 6;
+        requiredAngle1 += 90;
     }
+
+    y0 = Raycast(pickPoint, cv::Point(0, 1)); // Sopra
+    y1 = Raycast(pickPoint, cv::Point(0, -1)); //sotto
+    x0 = Raycast(pickPoint, cv::Point(1, 0)); // destra
+    x1 = Raycast(pickPoint, cv::Point(-1, 0));    // Sinis
+
+    cv::line(m_Cropped, y0, y1, cv::Scalar(255, 0, 0), 1);
+    cv::line(m_Cropped, x0, x1, cv::Scalar(255, 0, 0), 1);
 
     cv::circle(m_Cropped, pickPoint, 1, cv::Scalar(0, 0, 255), -1);
 
@@ -184,6 +190,10 @@ if (m_Cropped.rows == 0 || m_Cropped.cols == 0)
     cv::imwrite(std::string("output/") + std::string("result_") + path.substr(path.find_last_of("/") + 1), reverted);
     //cv::imshow("Image", reverted);
     cv::imwrite(std::string("output/") + path.substr(path.find_last_of("/")), m_Cropped);
+
+    printf("Picking Point: %d %d\n", newPickingPoint.x, newPickingPoint.y);
+    printf("First opening: %d with angle %.2f\n", requiredOpening1, requiredAngle1);
+    printf("Second opening: %d with angle %.2f\n", requiredOpening2, requiredAngle2);
 
 #ifdef DEBUG
     fprintf(stderr, "Writed Image, Destroying Windows... \n");
