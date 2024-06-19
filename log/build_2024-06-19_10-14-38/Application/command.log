@@ -1,0 +1,2 @@
+Invoking command in '/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/build/Application': /usr/bin/cmake /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint -DCMAKE_INSTALL_PREFIX=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/install/Application
+Invoked command in '/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/build/Application' returned '0': /usr/bin/cmake /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint -DCMAKE_INSTALL_PREFIX=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/install/Application

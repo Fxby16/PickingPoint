@@ -1,0 +1,24 @@
+[0.018s] Invoking command in '/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/build/Application': /usr/bin/cmake /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint -DCMAKE_INSTALL_PREFIX=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/install/Application
+[0.060s] [0mCMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+[0.060s]   Compatibility with CMake < 2.8.12 will be removed from a future version of
+[0.060s]   CMake.
+[0.060s] 
+[0.061s]   Update the VERSION argument <min> value or use a ...<max> suffix to tell
+[0.061s]   CMake that the project does not need compatibility with older versions.
+[0.061s] 
+[0.061s] [0m
+[0.092s] [33mCMake Warning (dev) at CMakeLists.txt:6 (add_executable):
+[0.093s]   Policy CMP0037 is not set: Target names should not be reserved and should
+[0.093s]   match a validity pattern.  Run "cmake --help-policy CMP0037" for policy
+[0.093s]   details.  Use the cmake_policy command to set the policy and suppress this
+[0.093s]   warning.
+[0.093s] 
+[0.094s]   The target name "bin/Application" is reserved or not valid for certain
+[0.094s]   CMake features, such as generator expressions, and may result in undefined
+[0.094s]   behavior.
+[0.094s] This warning is for project developers.  Use -Wno-dev to suppress it.
+[0.094s] [0m
+[0.095s] -- Configuring done
+[0.113s] -- Generating done
+[0.115s] -- Build files have been written to: /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint
+[0.119s] Invoked command in '/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/build/Application' returned '0': /usr/bin/cmake /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint -DCMAKE_INSTALL_PREFIX=/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/install/Application
