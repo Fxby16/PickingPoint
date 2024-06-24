@@ -93,7 +93,7 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
                 continue;
             }
 
-            min_depth = std::min(min_depth, (unsigned int) m_DepthCropped.at<cv::Vec3f>(i, j)[2]);
+            min_depth = std::min(min_depth, std::max((unsigned int) m_DepthCropped.at<cv::Vec3f>(i, j)[2], (unsigned int) 100));
             max_depth = std::max(max_depth, (unsigned int) m_DepthCropped.at<cv::Vec3f>(i, j)[2]);
         }
     }
@@ -122,8 +122,6 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
     cv::Mat Output;
     cv::applyColorMap(Depth_Converted, Output, cv::COLORMAP_RAINBOW);
 
-    cv::imwrite(std::string("output/") + std::string("depth_") + path.substr(path.find_last_of("/") + 1), Output);
-
     if (m_Cropped.rows == 0 || m_Cropped.cols == 0)
         return;
 
@@ -140,57 +138,16 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
     }
 
     // Finding the first 10 cells with the lowest score
-    std::vector<PickingPoint::Cell> min_cell_list = FindMinCell(30);
+    std::vector<PickingPoint::Cell> min_cell_list = FindMinCell(20);
     
     // Sorting the cells by the minimum depth, to find the highest point
     std::sort(min_cell_list.begin(), min_cell_list.end(), [this](const struct Cell& a, const struct Cell& b) -> bool {
         return GetMinDepth(m_Cells[a.y][a.x].second, a.y, a.x) < GetMinDepth(m_Cells[b.y][b.x].second, b.y, b.x);
     });
 
-    // Drawing all the candidate cells
-    //for (int i = 0; i < min_cell_list.size(); i++) {
-    //    cv::Rect r = m_Cells[min_cell_list[i].y][min_cell_list[i].x].second;
-    //    cv::circle(m_Cropped, cv::Point(r.x + r.width / 2, r.y + r.height / 2), 2, cv::Scalar(255, 112, 255), -1);
-    //}
-
-
-    unsigned int cell_x = min_cell_list[0].x, cell_y = min_cell_list[0].y;
-    unsigned int vertical_count = 0, horizontal_count = 0;
-
-    unsigned int min_x = std::numeric_limits<unsigned int>::max(), max_x = 0;
-    unsigned int min_y = std::numeric_limits<unsigned int>::max(), max_y = 0;
-
-    for(Cell& cell : min_cell_list)
-    {
-        if(cell.x == cell_x)
-        {
-            vertical_count++;
-            min_y = std::min(min_y, cell.y);
-            max_y = std::max(max_y, cell.y);
-        }
-
-        if(cell.y == cell_y)
-        {
-            horizontal_count++;
-            min_x = std::min(min_x, cell.x);
-            max_x = std::max(max_x, cell.x);
-        }
-    }
-
-    printf("Vertical: %zu, Horizontal: %zu\n", vertical_count, horizontal_count);
-
-    cv::Rect r;
-
-    if(horizontal_count > vertical_count)
-    {
-        r = m_Cells[cell_y][(min_x + max_x) / 2].second;
-    }
-    else
-    {
-        r = m_Cells[(min_y + max_y) / 2][cell_x].second;
-    }
-
     DrawHeatMap(path); 
+
+    cv::Rect r = m_Cells[min_cell_list[0].y][min_cell_list[0].x].second;
 
     cv::Point pickPoint = cv::Point(r.x + r.width / 2, r.y + r.height / 2);
 
@@ -198,6 +155,15 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
     cv::Point y1 = Raycast(pickPoint, cv::Point(0, -1)); //sotto
     cv::Point x0 = Raycast(pickPoint, cv::Point(1, 0)); // destra
     cv::Point x1 = Raycast(pickPoint, cv::Point(-1, 0));    // Sinis
+
+    if(std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x))
+    {
+        pickPoint.x = (x0.x + x1.x) / 2;
+    }
+    else
+    {
+        pickPoint.y = (y0.y + y1.y) / 2;
+    }
 
     cv::circle(m_Cropped, y0, 2, cv::Scalar(0, 112, 255), -1);
     cv::circle(m_Cropped, y1, 2, cv::Scalar(0, 112, 255), -1);
@@ -218,12 +184,14 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
     cv::line(m_Cropped, x0, x1, cv::Scalar(255, 0, 0), 1);
 
     cv::circle(m_Cropped, pickPoint, 1, cv::Scalar(0, 0, 255), -1);
+    cv::circle(Output, pickPoint, 1, cv::Scalar(0, 0, 255), -1);
 
-    cv::Mat M_inv, reverted;
+    cv::Mat M_inv, reverted, depth_reverted;
     cv::Size original_size = m_Image.size();
 
     // Step 1: Create a new image of the original size
     cv::Mat new_image = cv::Mat::zeros(original_size, m_Cropped.type());
+    cv::Mat new_image2 = cv::Mat::zeros(original_size, m_Cropped.type());
 
     // Get the image size
     int imgWidth = new_image.cols;
@@ -235,25 +203,31 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
 
     // Step 2: Place m_Cropped in this new image at the position corresponding to the original rect
     cv::Rect original_rect(xValue, yValue, rect_size.width, rect_size.height);
+    cv::Rect original_rect2(xValue, yValue, rect_size.width, rect_size.height);
 
     m_Cropped.copyTo(new_image(original_rect));
+    Output.copyTo(new_image2(original_rect2));
 
     // Step 3: Compute the inverse of M
     cv::invertAffineTransform(M, M_inv);
 
     // Step 4: Apply cv::warpAffine with the inverted matrix
     cv::warpAffine(new_image, reverted, M_inv, original_size, cv::INTER_NEAREST, cv::BORDER_CONSTANT, cv::Scalar(0));
+    cv::warpAffine(new_image2, depth_reverted, M_inv, original_size, cv::INTER_NEAREST, cv::BORDER_CONSTANT, cv::Scalar(0));
 
     // Step 5: If the width and height were swapped, swap them back
     if (rect.angle < -45.0f) {
         cv::swap(reverted.cols, reverted.rows);
+        cv::swap(depth_reverted.cols, depth_reverted.rows);
     }
 
     cv::Point newPickingPoint = FindColor(cv::Scalar(0, 0, 255), reverted);
 
     cv::circle(reverted, newPickingPoint, 2, cv::Scalar(0, 255, 0), -1);
+    cv::circle(depth_reverted, newPickingPoint, 2, cv::Scalar(0, 255, 0), -1);
     cv::imwrite(std::string("output/") + std::string("result_") + path.substr(path.find_last_of("/") + 1), reverted);
     cv::imwrite(std::string("output/") + path.substr(path.find_last_of("/")), m_Cropped);
+    cv::imwrite(std::string("output/") + std::string("depth_") + path.substr(path.find_last_of("/") + 1), depth_reverted);
 }
 
 cv::Point PickingPoint::FindColor(cv::Scalar color, cv::Mat& image) 
@@ -395,7 +369,7 @@ cv::Point PickingPoint::Raycast(cv::Point startingPoint, cv::Point direction) {
     }
 
     if (!prev_color_black) {
-        savedPoint = currentPoint;
+        savedPoint = currentPoint - direction;
     }
     
     return savedPoint;
