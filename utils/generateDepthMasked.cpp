@@ -29,6 +29,9 @@ int main()
 
         //FILE* file = fopen((entry.path().string().substr(0, entry.path().string().find_last_of(".")) + ".txt").c_str(), "w");
 
+        // val : 255 = x : 25 
+        // (val * 10)
+
         for(int i = 0; i < depth.rows; i++)
         {
             for(int j = 0; j < depth.cols; j++)
@@ -45,12 +48,6 @@ int main()
             }
         }
 
-        cv::Mat Depth_Converted;
-        depth_masked.convertTo(Depth_Converted, CV_8UC1);
-
-        cv::Mat Output;
-        cv::applyColorMap(Depth_Converted, Output, cv::COLORMAP_RAINBOW);
-
-        cv::imwrite("../assets/depth_masked/" + (entry.path().filename().string().substr(0, entry.path().filename().string().find_last_of(".")) + ".png"), Output);
+        cv::imwrite("../assets/depth_masked/" + (entry.path().filename().string().substr(0, entry.path().filename().string().find_last_of(".")) + ".png"), depth_masked);
     }
 }

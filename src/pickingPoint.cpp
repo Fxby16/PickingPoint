@@ -59,7 +59,7 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
     M = cv::getRotationMatrix2D(rect.center, angle, 1.0);
 
     // perform the affine transformation
-    cv::warpAffine(m_Image, rotated, M, m_Image.size(), cv::INTER_CUBIC);
+    cv::warpAffine(m_Image, rotated, M, m_Image.size(), cv::INTER_NEAREST);
 
     // crop the resulting image
     cv::getRectSubPix(rotated, rect_size, rect.center, m_Cropped);
@@ -140,7 +140,7 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
     }
 
     // Finding the first 10 cells with the lowest score
-    std::vector<PickingPoint::Cell> min_cell_list = FindMinCell(10);
+    std::vector<PickingPoint::Cell> min_cell_list = FindMinCell(30);
     
     // Sorting the cells by the minimum depth, to find the highest point
     std::sort(min_cell_list.begin(), min_cell_list.end(), [this](const struct Cell& a, const struct Cell& b) -> bool {
@@ -148,13 +148,47 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
     });
 
     // Drawing all the candidate cells
-    for (int i = 0; i < min_cell_list.size(); i++) {
-        cv::Rect r = m_Cells[min_cell_list[i].y][min_cell_list[i].x].second;
+    //for (int i = 0; i < min_cell_list.size(); i++) {
+    //    cv::Rect r = m_Cells[min_cell_list[i].y][min_cell_list[i].x].second;
+    //    cv::circle(m_Cropped, cv::Point(r.x + r.width / 2, r.y + r.height / 2), 2, cv::Scalar(255, 112, 255), -1);
+    //}
 
-        cv::circle(m_Cropped, cv::Point(r.x + r.width / 2, r.y + r.height / 2), 2, cv::Scalar(255, 112, 255), -1);
+
+    unsigned int cell_x = min_cell_list[0].x, cell_y = min_cell_list[0].y;
+    unsigned int vertical_count = 0, horizontal_count = 0;
+
+    unsigned int min_x = std::numeric_limits<unsigned int>::max(), max_x = 0;
+    unsigned int min_y = std::numeric_limits<unsigned int>::max(), max_y = 0;
+
+    for(Cell& cell : min_cell_list)
+    {
+        if(cell.x == cell_x)
+        {
+            vertical_count++;
+            min_y = std::min(min_y, cell.y);
+            max_y = std::max(max_y, cell.y);
+        }
+
+        if(cell.y == cell_y)
+        {
+            horizontal_count++;
+            min_x = std::min(min_x, cell.x);
+            max_x = std::max(max_x, cell.x);
+        }
     }
 
-    cv::Rect r = m_Cells[min_cell_list[min_cell_list.size() - 1].y][min_cell_list[min_cell_list.size() - 1].x].second;
+    printf("Vertical: %zu, Horizontal: %zu\n", vertical_count, horizontal_count);
+
+    cv::Rect r;
+
+    if(horizontal_count > vertical_count)
+    {
+        r = m_Cells[cell_y][(min_x + max_x) / 2].second;
+    }
+    else
+    {
+        r = m_Cells[(min_y + max_y) / 2][cell_x].second;
+    }
 
     DrawHeatMap(path); 
 
@@ -419,12 +453,18 @@ unsigned int PickingPoint::GetMinDepth(cv::Rect& rect, size_t row, size_t col) {
     {
         for(int j = rect.x; j < rect.x + rect.width; j++)
         {
-            unsigned int color = (unsigned int) m_DepthMap.at<cv::Vec3f>(i, j)[2];
+            unsigned int color = (unsigned int) m_DepthCropped.at<cv::Vec3f>(i, j)[2];
 
-            assert(m_DepthCache[row].size() > col); 
+            //printf("Color: %u\n", color);
 
             m_DepthCache[row][col] = std::min(m_DepthCache[row][col], color);
         }
+    }
+
+    //printf("Depth: %u\n", m_DepthCache[row][col]);
+
+    if (m_DepthCache[row][col] < 220) {
+        m_DepthCache[row][col] = std::numeric_limits<unsigned int>::max();
     }
 
     return m_DepthCache[row][col];
@@ -468,7 +508,6 @@ unsigned int PickingPoint::GetPixelCount(cv::Rect& rect, size_t row, size_t col)
 
 std::vector<PickingPoint::Cell> PickingPoint::FindMinCell(unsigned int n)
 {
-
     if (n == 1)
         n = 2;
         
@@ -489,7 +528,7 @@ std::vector<PickingPoint::Cell> PickingPoint::FindMinCell(unsigned int n)
     });
 
     std::vector<PickingPoint::Cell> result;
-    for (int i = 0; i < std::min((size_t) n, cells.size()); i++ ) {
+    for (int i = 0; i < std::min((size_t) n, cells.size()); i++) {
         result.push_back(cells[i]);
     }
 
