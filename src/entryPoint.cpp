@@ -4,9 +4,29 @@
 
 int main(int argc, char** argv)
 {
-    std::string path = "assets/masks";
+    std::string mask_path = "assets/masks";
 
-    for (const auto& entry : std::filesystem::directory_iterator(path)) {
+    for(const auto& mask_entry : std::filesystem::directory_iterator(mask_path))
+    {
+        for(const auto& entry : std::filesystem::directory_iterator(mask_entry.path()))
+        {
+            printf("Path: %s\n", entry.path().c_str());
+
+            std::string tmp = entry.path().string().replace(entry.path().string().find("masks"), 5, "depth_masked");
+            std::string tmp2 = tmp.replace(tmp.find_last_of("."), 4, ".exr");
+
+            std::string output_folder = "output/" + mask_entry.path().filename().string();
+
+            std::filesystem::create_directory(output_folder);
+
+            Timer timer;
+
+            PickingPoint pickingPoint;
+            pickingPoint.Process(entry.path(), tmp2, output_folder);
+        }
+    }
+
+    /*for (const auto& entry : std::filesystem::directory_iterator(path)) {
         printf("Path: %s\n", entry.path().c_str());
 
         Timer timer;
@@ -14,17 +34,7 @@ int main(int argc, char** argv)
         PickingPoint pickingPoint;
         std::string tmp = entry.path().string().replace(entry.path().string().find("masks"), 5, "depth_masked");
         pickingPoint.Process(entry.path(), tmp.replace(tmp.find_last_of("."), 4, ".exr"));
-    }
-
-    // for(const auto& entry : std::filesystem::directory_iterator("assets/masks"))
-    // {
-    //     printf("Path: %s\n", entry.path().c_str());
-        
-    //     Timer timer;
-
-    //     PickingPoint pickingPoint;
-    //     pickingPoint.Process(entry.path(), "assets/depth_masked/" + (entry.path().filename().string().substr(0, entry.path().filename().string().find_last_of(".")) + ".exr"));
-    // }
+    }*/
 
     return 0;
 }

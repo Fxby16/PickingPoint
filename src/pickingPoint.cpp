@@ -5,7 +5,7 @@
 #include <limits>
 #include <iostream>
 
-void PickingPoint::Process(const std::string& path, const std::string& depth_path)
+void PickingPoint::Process(const std::string& path, const std::string& depth_path, const std::string& output_folder)
 {
     m_Image = cv::imread(path, cv::IMREAD_COLOR);
     m_DepthMap = cv::imread(depth_path, cv::IMREAD_UNCHANGED);
@@ -124,7 +124,7 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
     cv::Mat Output;
     cv::applyColorMap(Depth_Converted, Output, cv::COLORMAP_RAINBOW);
 
-    cv::imwrite(std::string("output/") + std::string("depth_colored_") + path.substr(path.find_last_of("/") + 1), Output);
+    cv::imwrite(output_folder + std::string("/depth_colored_") + path.substr(path.find_last_of("/") + 1), Output);
 
     if (m_Cropped.rows == 0 || m_Cropped.cols == 0)
         return;
@@ -191,7 +191,7 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
         cv::rectangle(Output, m_Cells[min_cell_list[i].y][min_cell_list[i].x].second, cv::Scalar(255, 255, 255), 1);
     }
 
-    DrawHeatMap(path); 
+    //DrawHeatMap(path, output_folder); 
 
     cv::Rect r = m_Cells[min_cell_list[0].y][min_cell_list[0].x].second;
 
@@ -287,9 +287,9 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
 
     //cv::circle(reverted, newPickingPoint, 2, cv::Scalar(0, 255, 0), -1);
     //cv::circle(depth_reverted, newPickingPoint, 2, cv::Scalar(0, 255, 0), -1);
-    cv::imwrite(std::string("output/") + std::string("result_") + path.substr(path.find_last_of("/") + 1), reverted);
-    cv::imwrite(std::string("output/") + path.substr(path.find_last_of("/")), m_Cropped);
-    cv::imwrite(std::string("output/") + std::string("depth_") + path.substr(path.find_last_of("/") + 1), depth_reverted);
+    cv::imwrite(output_folder + std::string("/result_") + path.substr(path.find_last_of("/") + 1), reverted);
+    cv::imwrite(output_folder + path.substr(path.find_last_of("/")), m_Cropped);
+    cv::imwrite(output_folder + std::string("/depth_") + path.substr(path.find_last_of("/") + 1), depth_reverted);
 }
 
 cv::Point PickingPoint::FindColor(cv::Scalar color, cv::Mat& image) 
@@ -437,7 +437,7 @@ cv::Point PickingPoint::Raycast(cv::Point startingPoint, cv::Point direction) {
     return savedPoint;
 }
 
-void PickingPoint::DrawHeatMap(const std::string& path) {
+void PickingPoint::DrawHeatMap(const std::string& path, const std::string& output_folder) {
     m_HeatMap = m_Cropped.clone();
 
     std::pair<size_t, size_t> max_cell = FindMaxCell();
@@ -453,7 +453,7 @@ void PickingPoint::DrawHeatMap(const std::string& path) {
         }
     }
 
-    cv::imwrite(std::string("output/") + std::string("heatmap_") + path.substr(path.find_last_of("/") + 1), m_HeatMap);
+    cv::imwrite(output_folder + std::string("/heatmap_") + path.substr(path.find_last_of("/") + 1), m_HeatMap);
 }
 
 

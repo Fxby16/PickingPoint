@@ -17,13 +17,13 @@ public:
         unsigned int y;
     };
 
-    void Process(const std::string& path, const std::string& depth_path);
+    void Process(const std::string& path, const std::string& depth_path, const std::string& output_folder);
 
     void ExtractCells(size_t cell_size, cv::Mat img);
     void HandleCell(std::pair<double, cv::Rect>& cell, int row, int col);
     double GetDistance(int x1, int y1, int x2, int y2);
     unsigned int GetPixelCount(cv::Rect& rect, size_t row, size_t col);
-    void DrawHeatMap(const std::string& path);
+    void DrawHeatMap(const std::string& path, const std::string& output_folder);
     unsigned int GetMinDepth(cv::Rect& rect, size_t row, size_t col);
 
     cv::Point Raycast(cv::Point startingPoint, cv::Point direction);
