@@ -7,3 +7,4 @@ vendor/
 CMakeCache.txt
 *.cmake
 Makefile
+install/
