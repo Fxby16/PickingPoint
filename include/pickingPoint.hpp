@@ -33,7 +33,7 @@ public:
 
     std::vector<std::pair<size_t, size_t>> GetCellsFromCenter(std::pair<size_t, size_t> center, size_t cells_to_get);
 
-    cv::Point Raycast(cv::Point startingPoint, cv::Point direction);
+    cv::Point Raycast(cv::Point startingPoint, cv::Point direction, bool useDepth = false);
     cv::Point FindColor(cv::Scalar color, cv::Mat& image);
 
     std::vector<Cell> FindMinCell(unsigned int n);
