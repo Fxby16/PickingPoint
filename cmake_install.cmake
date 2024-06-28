@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPointVecchio/PickingPoint
+# Install script for directory: /mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPointVecchio/PickingPoint/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/574cdeb8-9b3d-49a4-aa16-95589af03bdf/PickingPoint/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

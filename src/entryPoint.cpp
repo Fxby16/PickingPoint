@@ -6,6 +6,8 @@ int main(int argc, char** argv)
 {
     std::string mask_path = "assets/masks";
 
+    std::filesystem::create_directory("output");
+
     for(const auto& mask_entry : std::filesystem::directory_iterator(mask_path))
     {
         for(const auto& entry : std::filesystem::directory_iterator(mask_entry.path()))
