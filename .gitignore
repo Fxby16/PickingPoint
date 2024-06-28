@@ -4,3 +4,6 @@ output/
 outputOttimizzati/
 outputNonOttimizzato/
 vendor/
+CMakeCache.txt
+*.cmake
+Makefile

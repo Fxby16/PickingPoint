@@ -153,56 +153,27 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
 
     cv::Rect temp_rect = m_Cells[min_cell_list[0].y][min_cell_list[0].x].second;
     cv::Point temp = cv::Point(temp_rect.x + temp_rect.width / 2, temp_rect.y + temp_rect.height / 2);
-
-    cv::circle(m_Cropped, temp, 2, cv::Scalar(0, 120, 255), -1);
-    cv::circle(Output, temp, 2, cv::Scalar(0, 120, 255), -1);
     
     // Sorting the cells by the minimum depth, to find the highest point
     std::sort(min_cell_list.begin(), min_cell_list.end(), [this](const struct Cell& a, const struct Cell& b) -> bool {
         return GetMinDepth(m_Cells[a.y][a.x].second, a.y, a.x) < GetMinDepth(m_Cells[b.y][b.x].second, b.y, b.x);
     });
-/*
-    // 20
-    size_t to_erase;
-    if(min_cell_list.size() > 6) {
-        // to_erase = 6:
-        to_erase = 6;
-    }
-    else
-    {
-        to_erase = min_cell_list.size() - 1;
-    }
 
-    size_t erased = to_erase / 2;
-    // Delete the first 3 elements
-    min_cell_list.erase(min_cell_list.begin(), min_cell_list.begin() + erased);
-    // 17 - (6 - 3) = 14 -> 17
-    min_cell_list.erase(min_cell_list.end() - (to_erase - erased), min_cell_list.end());
-*/
     for(int i = 0; i < min_cell_list.size() - 1; i++)
     {
         //printf("Depth[%d]: %u Depth[%d]: %u\n", i, GetMinDepth(m_Cells[min_cell_list[i].y][min_cell_list[i].x].second, min_cell_list[i].y, min_cell_list[i].x), i + 1, GetMinDepth(m_Cells[min_cell_list[i + 1].y][min_cell_list[i + 1].x].second, min_cell_list[i + 1].y, min_cell_list[i + 1].x));
         assert(GetMinDepth(m_Cells[min_cell_list[i].y][min_cell_list[i].x].second, min_cell_list[i].y, min_cell_list[i].x) <= GetMinDepth(m_Cells[min_cell_list[i + 1].y][min_cell_list[i + 1].x].second, min_cell_list[i + 1].y, min_cell_list[i + 1].x));
     }
 
-    for(int i = 0; i < min_cell_list.size(); i++)
+    /*for(int i = 0; i < min_cell_list.size(); i++)
     {
         cv::rectangle(m_Cropped, m_Cells[min_cell_list[i].y][min_cell_list[i].x].second, cv::Scalar(255, 255, 255), 1);
         cv::rectangle(Output, m_Cells[min_cell_list[i].y][min_cell_list[i].x].second, cv::Scalar(255, 255, 255), 1);
-    }
+    }*/
 
-    //DrawHeatMap(path, output_folder); 
+    DrawHeatMap(path, output_folder); 
 
     cv::Rect r = m_Cells[min_cell_list[0].y][min_cell_list[0].x].second;
-
-    /*for(int i = r.x; i < r.x + r.width; i++)
-    {
-        for(int j = r.y; j < r.y + r.height; j++)
-        {
-            float value = m_DepthCropped.at<cv::Vec3f>(j, i)[2];
-            printf("Depth[%d][%d]: %f\n", j, i, value);
-        }
-    }*/
 
     cv::Point pickPoint = cv::Point(r.x + r.width / 2, r.y + r.height / 2);
 
@@ -213,16 +184,6 @@ void PickingPoint::Process(const std::string& path, const std::string& depth_pat
     cv::Point y1 = Raycast(pickPoint, cv::Point(0, -1)); // down
     cv::Point x0 = Raycast(pickPoint, cv::Point(1, 0)); // right
     cv::Point x1 = Raycast(pickPoint, cv::Point(-1, 0)); // left
-
-    /*
-    if(std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x))
-    {
-        pickPoint.x = (x0.x + x1.x) / 2;
-    }
-    else
-    {
-        pickPoint.y = (y0.y + y1.y) / 2;
-    }*/
 
     cv::circle(m_Cropped, pickPoint, 2, cv::Scalar(255, 0, 0), -1);
     cv::circle(Output, pickPoint, 2, cv::Scalar(255, 0, 0), -1);
@@ -377,7 +338,7 @@ void PickingPoint::ExtractCells(size_t cell_size, cv::Mat img)
 std::pair<size_t, size_t> PickingPoint::FindMaxCell()
 {
     double min_value = std::numeric_limits<double>::min();
-    size_t x, y; 
+    size_t x = 0, y = 0; 
 
     for(size_t i = 0; i < m_Cells.size(); i++)
     {
@@ -443,6 +404,7 @@ void PickingPoint::DrawHeatMap(const std::string& path, const std::string& outpu
     std::pair<size_t, size_t> max_cell = FindMaxCell();
     auto cell = m_Cells[max_cell.first][max_cell.second];
     double maxValue = cell.first;
+
 
     // pixelValue : maxValue = x : 255
     for(size_t i = 0; i < m_Cells.size(); i++)
