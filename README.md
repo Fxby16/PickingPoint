@@ -1,9 +1,9 @@
-# FEATURES:
+# Picking Point
+Algorithm to get the best picking point given a mask and a depth map 
 
-- Compiled OpenCV
-- Integrated OpenCV in our project
-- Integrated the object searching algorithm, by searching the border of the object
-- Added a box around the object
-- Added the angle detection
+## Build
+`cmake .`  
+`make`  
 
-# TODO:
+## Run
+`bin/Application`  

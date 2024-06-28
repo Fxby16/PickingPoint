@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project( Application )
 
+file(MAKE_DIRECTORY bin)
+
 find_package( OpenCV REQUIRED )
 find_package(VTK REQUIRED)
 find_package(Iconv REQUIRED)
