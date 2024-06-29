@@ -17,7 +17,7 @@ public:
         unsigned int y;
     };
 
-    void Process(const std::string& path, const std::string& depth_path, const std::string& output_folder);
+    std::pair<cv::Point, double> Process(const std::string& path, const std::string& depth_path, const std::string& output_folder);
 
     void ExtractCells(size_t cell_size, cv::Mat img);
     void HandleCell(std::pair<double, cv::Rect>& cell, int row, int col);
@@ -25,6 +25,7 @@ public:
     unsigned int GetPixelCount(cv::Rect& rect, size_t row, size_t col);
     void DrawHeatMap(const std::string& path, const std::string& output_folder);
     unsigned int GetMinDepth(cv::Rect& rect, size_t row, size_t col);
+    double GetAvgDepth(cv::Rect& rect);
 
     /**
      * \return the indices of the cell that contains the given point (y, x)
