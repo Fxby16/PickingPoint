@@ -172,67 +172,7 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
     }
 
-    //cv::circle(Output, pickPoint, 1, cv::Scalar(0, 0, 0), -1);
     printf("Picking Point: (%d, %d)\n", pickPoint.x, pickPoint.y);
-
-    std::map<std::pair<size_t, size_t>, bool> visited;
-
-    for (int k = 0; k < 50; k++) {
-        cv::Mat temp = Output.clone();
-
-        std::pair<size_t, size_t> cell = GetCellFromPoint(pickPoint, cell_size);
-
-        std::vector<std::pair<size_t, size_t>> cells_to_filter = GetCellsFromCenter(cell, cells_to_get);
-
-        if(visited[cell]){
-            break;
-        }
-
-        visited[cell] = true;
-        
-        for(auto [y, x] : cells_to_filter)
-        {
-            cv::rectangle(temp, m_Cells[y][x].second, cv::Scalar(255, 255, 255), 1);
-        }
-        //cv::Mat zommed;
-        //cv::resize(temp, zommed, cv::Size(), 3, 3);
-
-        //cv::imshow("Output", zommed);
-        //cv::waitKey(0);
-        // Sorting the cells by the minimum depth, to find the highest point
-        std::sort(cells_to_filter.begin(), cells_to_filter.end(), [this](const std::pair<size_t, size_t>& a, const std::pair<size_t, size_t>& b) -> bool {
-            return GetMinDepth(m_Cells[a.first][a.second].second, a.first, a.second) < GetMinDepth(m_Cells[b.first][b.second].second, b.first, b.second);
-        });
-
-        r = m_Cells[cells_to_filter[0].first][cells_to_filter[0].second].second;
-
-        pickPoint = cv::Point(r.x + r.width / 2, r.y + r.height / 2);
-    
-        y0 = Raycast(pickPoint, cv::Point(0, 1), false); // Sopra
-        y1 = Raycast(pickPoint, cv::Point(0, -1), false); //sotto
-        x0 = Raycast(pickPoint, cv::Point(1, 0), false); // destra
-        x1 = Raycast(pickPoint, cv::Point(-1, 0), false); // sinistra
-
-        //cv::circle(temp, pickPoint, 2, cv::Scalar(255, 255, 255), -1);
-
-        //cv::resize(temp, zommed, cv::Size(), 3, 3);
-
-        //cv::imshow("Output", zommed);
-        //cv::waitKey(0);
-        if(std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x)){
-            pickPoint = cv::Point((x0.x + x1.x) / 2, pickPoint.y);
-        }else{
-            pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
-        }
-
-
-        //cv::circle(temp, pickPoint, 2, cv::Scalar(0, 0, 0), -1);
-
-        //cv::resize(temp, zommed, cv::Size(), 3, 3);
-
-        //cv::imshow("Output", zommed);
-        //cv::waitKey(0);
-    }
 
     //DrawHeatMap(path, output_folder); //da fixare (crasha)
 
@@ -241,21 +181,21 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
     float requiredAngle1 = requiredAngle; // angle for the shortest opening
     float requiredAngle2 = requiredAngle; // angle for the longest opening
 
-    y0 = Raycast(pickPoint, cv::Point(0, 1), false); // Sopra
-    y1 = Raycast(pickPoint, cv::Point(0, -1), false); //sotto
-    x0 = Raycast(pickPoint, cv::Point(1, 0), false); // destra
-    x1 = Raycast(pickPoint, cv::Point(-1, 0), false); // sinistra
+y0 = Raycast(pickPoint, cv::Point(0, 1), true); // Sopra
+    y1 = Raycast(pickPoint, cv::Point(0, -1), true); //sotto
+    x0 = Raycast(pickPoint, cv::Point(1, 0), true); // destra
+    x1 = Raycast(pickPoint, cv::Point(-1, 0), true); // sinistra
 
     if(std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x)){
         requiredOpening1 = std::abs(x0.x - x1.x) + 6;
         requiredOpening2 = std::abs(y0.y - y1.y) + 6;
         requiredAngle2 += 90;
-        //pickPoint = cv::Point((x0.x + x1.x) / 2, pickPoint.y);
+        pickPoint = cv::Point((x0.x + x1.x) / 2, pickPoint.y);
     }else{
         requiredOpening1 = std::abs(y0.y - y1.y) + 6;
         requiredOpening2 = std::abs(x0.x - x1.x) + 6;
         requiredAngle1 += 90;
-        //pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
+        pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
     }
 
     printf("Required Opening 1: %u Angle1: %f\nRequired Opening 2: %u Angle2: %f\n", requiredOpening1, requiredAngle1, requiredOpening2, requiredAngle2);
@@ -474,7 +414,7 @@ cv::Point PickingPoint::Raycast(cv::Point startingPoint, cv::Point direction, bo
 
         if (useDepth) {
             cv::Vec3f depth = m_DepthCropped.at<cv::Vec3f>(currentPoint)[2];
-            if (std::abs(depth[2] - oldDepth[2]) > 10) {
+            if (std::abs(depth[2] - oldDepth[2]) > 30) {
                 return savedPoint;
             }
 
