@@ -315,7 +315,7 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         {
             double depth = GetAvgDepth(cell.second);
 
-            if (depth == -1) {
+            if (depth <= 0) {
                 count++;
                 continue;
             }
@@ -324,7 +324,15 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         }
     }
 
-    avgDepth /= ((m_Cells.size() * m_Cells[0].size()) - count);
+    printf("[Prima] Value: %lf, avgDepth: %lf\n", (double) ((m_Cells.size() * m_Cells[0].size()) - count), avgDepth);
+
+    avgDepth /= (double) ((m_Cells.size() * m_Cells[0].size()) - count);
+
+    if (avgDepth <= 0 || avgDepth > 1000 || std::isnan(avgDepth) || std::isinf(avgDepth)) {
+        avgDepth = 500;
+    }
+
+    printf("Value: %lf, avgDepth: %lf\n", (double) ((m_Cells.size() * m_Cells[0].size()) - count), avgDepth);
 
     return {newPickingPoint, avgDepth};
 }
@@ -660,7 +668,7 @@ double PickingPoint::GetAvgDepth(cv::Rect& rect)
     {
         for(int j = rect.x; j < rect.x + rect.width; j++)
         {
-            if(m_DepthCropped.at<cv::Vec3f>(i, j)[2] < 250)
+            if(m_DepthCropped.at<cv::Vec3f>(i, j)[2] < 350)
             {
                 count++;
                 continue;
@@ -672,7 +680,10 @@ double PickingPoint::GetAvgDepth(cv::Rect& rect)
 
     double avg = sum / (double) ((rect.width * rect.height) - count);
 
+    printf("Sum: %lf, Count: %lu, Questo: %lf, Rst: %lf\n", sum, count, (double) ((rect.width * rect.height) - count), avg);
+
     if (avg < 0 || std::isnan(avg)) {
+        printf("Avg: Nan!\n");
         return -1;
     }
 

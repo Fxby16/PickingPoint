@@ -9,7 +9,7 @@ int main(int argc, char** argv)
     for(const auto& mask_entry : std::filesystem::directory_iterator(mask_path))
     {
         printf("Opening RGB Image: %s\n", (mask_entry.path().string().replace(mask_entry.path().string().find("masks"), 5, "depth") + ".jpg").c_str());
-        //cv::Mat rgbImage = cv::imread(mask_entry.path().string().replace(mask_entry.path().string().find("masks"), 5, "depth") + ".jpg", cv::IMREAD_COLOR);
+        cv::Mat colorImage = cv::imread(mask_entry.path().string().replace(mask_entry.path().string().find("masks"), 5, "depth") + ".jpg", cv::IMREAD_COLOR);
         cv::Mat rgbImage = cv::imread(mask_entry.path().string().replace(mask_entry.path().string().find("masks"), 5, "depth") + ".exr", cv::IMREAD_UNCHANGED);
 
         // Finding the min depth for normalization
@@ -78,15 +78,15 @@ int main(int argc, char** argv)
             return p1.second < p2.second;
         });
 
-        cv::circle(Output, points[0].first, 3, cv::Scalar(0, 255, 0), -1);
-        cv::putText(Output, std::to_string((int) points[0].second) + " " + "0", cv::Point(points[0].first.x + 5, points[0].first.y + 5), cv::FONT_HERSHEY_SIMPLEX, 0.3, cv::Scalar(255, 255, 255), 1);
+        cv::circle(colorImage, points[0].first, 3, cv::Scalar(0, 255, 0), -1);
+        cv::putText(colorImage, std::to_string((int) points[0].second) + " " + "0", cv::Point(points[0].first.x + 5, points[0].first.y + 5), cv::FONT_HERSHEY_SIMPLEX, 0.3, cv::Scalar(255, 255, 255), 1);
 
         printf("Depths: %lf ", points[0].second);
 
         for(int k = 1; k < points.size(); k++)
         {
-            cv::circle(Output, points[k].first, 3, cv::Scalar(0, 0, 255), -1);
-            cv::putText(Output, std::to_string((int) points[k].second) + " " + std::to_string(k), cv::Point(points[k].first.x + 5, points[k].first.y + 5), cv::FONT_HERSHEY_SIMPLEX, 0.3, cv::Scalar(255, 255, 255), 1);
+            cv::circle(colorImage, points[k].first, 3, cv::Scalar(0, 0, 255), -1);
+            cv::putText(colorImage, std::to_string((int) points[k].second) + " " + std::to_string(k), cv::Point(points[k].first.x + 5, points[k].first.y + 5), cv::FONT_HERSHEY_SIMPLEX, 0.3, cv::Scalar(255, 255, 255), 1);
             printf("%lf ", points[k].second);
         }
 
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
 
         printf("Saving image: output/%s\n", (mask_entry.path().filename().string() + ".png").c_str());
 
-        cv::imwrite("output/" + mask_entry.path().filename().string() + ".png", Output);
+        cv::imwrite("output/" + mask_entry.path().filename().string() + ".png", colorImage);
     }
 
     return 0;

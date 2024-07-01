@@ -4,3 +4,10 @@ output/
 outputOttimizzati/
 outputNonOttimizzato/
 vendor/
+build/
+install/
+log/
+bin/
+CMakeCache.txt
+*.cmake
+Makefile
