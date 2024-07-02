@@ -5,6 +5,7 @@
 #include <limits>
 #include <iostream>
 #include <map>
+#include <utils.hpp>
 
 std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, const std::string& depth_path, const std::string& output_folder)
 {
@@ -56,20 +57,19 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         angle += 90.0f;
         cv::swap(rect_size.width, rect_size.height);
     }
-    // get the rotation matrix
-    M = cv::getRotationMatrix2D(rect.center, angle, 1.0);
 
-    // perform the affine transformation
-    cv::warpAffine(m_Image, rotated, M, m_Image.size(), cv::INTER_NEAREST);
+    printf("Before Rotation\n");
 
-    // crop the resulting image
-    cv::getRectSubPix(rotated, rect_size, rect.center, m_Cropped);
+    m_Cropped = cv::Mat(rect_size, m_Image.type());
+    getRotRectImg(rect, m_Image, m_Cropped);
 
-    cv::warpAffine(m_DepthMap, rotated2, M, m_DepthMap.size(), cv::INTER_NEAREST);
+    printf("Half Rotation\n");
+    printf("Size: %d %d\n", rect_size, m_DepthMap.type());
 
-    // crop the resulting image
-    cv::getRectSubPix(rotated2, rect_size, rect.center, m_DepthCropped);
+    m_DepthCropped = cv::Mat(rect_size, m_DepthMap.type());
+    getRotRectImg(rect, m_DepthMap, m_DepthCropped);
 
+    printf("After Rotation\n");
 
 
     /* Normalization:
@@ -123,6 +123,7 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
     m_DepthCroppedNormalized.convertTo(Depth_Converted, CV_8UC1);
 
     cv::Mat Output;
+    printf("Size: %d %d\n", Depth_Converted.rows, Depth_Converted.cols);
     cv::applyColorMap(Depth_Converted, Output, cv::COLORMAP_JET);
 
     cv::imwrite(output_folder + std::string("/depth_colored_") + path.substr(path.find_last_of("/") + 1), Output);
@@ -172,7 +173,7 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
     }
 
-    printf("Picking Point: (%d, %d)\n", pickPoint.x, pickPoint.y);
+    printf("Picking Point 2: (%d, %d)\n", pickPoint.x, pickPoint.y);
 
     //DrawHeatMap(path, output_folder); //da fixare (crasha)
 
@@ -181,7 +182,7 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
     float requiredAngle1 = requiredAngle; // angle for the shortest opening
     float requiredAngle2 = requiredAngle; // angle for the longest opening
 
-y0 = Raycast(pickPoint, cv::Point(0, 1), true); // Sopra
+    y0 = Raycast(pickPoint, cv::Point(0, 1), true); // Sopra
     y1 = Raycast(pickPoint, cv::Point(0, -1), true); //sotto
     x0 = Raycast(pickPoint, cv::Point(1, 0), true); // destra
     x1 = Raycast(pickPoint, cv::Point(-1, 0), true); // sinistra
@@ -203,51 +204,26 @@ y0 = Raycast(pickPoint, cv::Point(0, 1), true); // Sopra
     cv::circle(m_Cropped, pickPoint, 1, cv::Scalar(0, 0, 255), -1);
     cv::circle(Output, pickPoint, 1, cv::Scalar(0, 0, 255), -1);
 
-    cv::Mat M_inv, reverted, depth_reverted;
-    cv::Size original_size = m_Image.size();
+    cv::Mat dstDepth;
+    revertRotation(m_DepthCropped, dstDepth, m_Image.size(), rect, rect_size);
+    
+    cv::Mat dstImage;
+    revertRotation(m_Cropped, dstImage, m_Image.size(), rect, rect_size);
 
-    // Step 1: Create a new image of the original size
-    cv::Mat new_image = cv::Mat::zeros(original_size, m_Cropped.type());
-    cv::Mat new_image2 = cv::Mat::zeros(original_size, m_Cropped.type());
+    cv::Point newPickingPoint = FindColor(cv::Scalar(0, 0, 255), dstImage); //find the picking point on the original image
 
-    // Get the image size
-    int imgWidth = new_image.cols;
-    int imgHeight = new_image.rows;
+    printf("New Picking Point: (%d, %d)\n", newPickingPoint.x, newPickingPoint.y);
 
-    // Calculate the ROI position and size
-    int yValue = std::max(std::min(static_cast<int>(rect.center.y - rect_size.height / 2.0f), imgHeight - rect_size.height), 0);
-    int xValue = std::max(std::min(static_cast<int>(rect.center.x - rect_size.width / 2.0f), imgWidth - rect_size.width), 0);
+    cv::circle(dstDepth, newPickingPoint, 1, cv::Scalar(0, 255, 0), -1);
 
-    // Step 2: Place m_Cropped in this new image at the position corresponding to the original rect
-    cv::Rect original_rect(xValue, yValue, rect_size.width, rect_size.height);
-    cv::Rect original_rect2(xValue, yValue, rect_size.width, rect_size.height);
-
-    m_Cropped.copyTo(new_image(original_rect));
-    Output.copyTo(new_image2(original_rect2));
-
-    // Step 3: Compute the inverse of M
-    cv::invertAffineTransform(M, M_inv);
-
-    // Step 4: Apply cv::warpAffine with the inverted matrix
-    cv::warpAffine(new_image, reverted, M_inv, original_size, cv::INTER_NEAREST, 0, cv::Scalar(0));
-    cv::warpAffine(new_image2, depth_reverted, M_inv, original_size, cv::INTER_NEAREST, 0, cv::Scalar(0));
-
-    // Step 5: If the width and height were swapped, swap them back
-    if (rect.angle < -45.0f) {
-        cv::swap(reverted.cols, reverted.rows);
-        cv::swap(depth_reverted.cols, depth_reverted.rows);
-    }
-
-    cv::Point newPickingPoint = FindColor(cv::Scalar(0, 0, 255), reverted); //find the picking point on the original image
-
-    cv::circle(depth_reverted, newPickingPoint, 1, cv::Scalar(0, 255, 0), -1);
-
-    cv::imwrite(output_folder + std::string("/result_") + path.substr(path.find_last_of("/") + 1), reverted);
+    cv::imwrite(output_folder + std::string("/result_") + path.substr(path.find_last_of("/") + 1), dstImage);
     cv::imwrite(output_folder + path.substr(path.find_last_of("/")), m_Cropped);
-    cv::imwrite(output_folder + std::string("/depth_") + path.substr(path.find_last_of("/") + 1), depth_reverted);
+    cv::imwrite(output_folder + std::string("/depth_") + path.substr(path.find_last_of("/") + 1), dstDepth);
 
     size_t count = 0;
     double avgDepth = 0.0;
+
+    cv::imwrite(output_folder + std::string("/depthCropped_") + path.substr(path.find_last_of("/") + 1) + std::string(".exr"), m_DepthCropped);
 
     for(auto row : m_Cells)
     {
@@ -264,7 +240,9 @@ y0 = Raycast(pickPoint, cv::Point(0, 1), true); // Sopra
         }
     }
 
-    printf("[Prima] Value: %lf, avgDepth: %lf\n", (double) ((m_Cells.size() * m_Cells[0].size()) - count), avgDepth);
+
+
+    //printf("[Prima] Value: %lf, avgDepth: %lf\n", (double) ((m_Cells.size() * m_Cells[0].size()) - count), avgDepth);
 
     avgDepth /= (double) ((m_Cells.size() * m_Cells[0].size()) - count);
 
@@ -272,7 +250,7 @@ y0 = Raycast(pickPoint, cv::Point(0, 1), true); // Sopra
         avgDepth = 500;
     }
 
-    printf("Value: %lf, avgDepth: %lf\n", (double) ((m_Cells.size() * m_Cells[0].size()) - count), avgDepth);
+    //printf("Value: %lf, avgDepth: %lf\n", (double) ((m_Cells.size() * m_Cells[0].size()) - count), avgDepth);
 
     return {newPickingPoint, avgDepth};
 }
@@ -586,7 +564,6 @@ std::vector<std::pair<size_t, size_t>> PickingPoint::GetCellsFromCenter(std::pai
 
     std::vector<std::pair<size_t, size_t>> cells;
 
-    printf("Start X: %lu End X: %lu\n", start_x, end_x);
     for(size_t i = start_y; i < end_y; i++)
     {
         for(size_t j = start_x; j < end_x; j++)
@@ -595,7 +572,6 @@ std::vector<std::pair<size_t, size_t>> PickingPoint::GetCellsFromCenter(std::pai
         }
     }
 
-    printf("Size: %lu\n", cells.size());
     return cells;
 }
 
@@ -608,7 +584,7 @@ double PickingPoint::GetAvgDepth(cv::Rect& rect)
     {
         for(int j = rect.x; j < rect.x + rect.width; j++)
         {
-            if(m_DepthCropped.at<cv::Vec3f>(i, j)[2] < 350)
+            if(m_DepthCropped.at<cv::Vec3f>(i, j)[2] < 260)
             {
                 count++;
                 continue;
@@ -620,10 +596,10 @@ double PickingPoint::GetAvgDepth(cv::Rect& rect)
 
     double avg = sum / (double) ((rect.width * rect.height) - count);
 
-    printf("Sum: %lf, Count: %lu, Questo: %lf, Rst: %lf\n", sum, count, (double) ((rect.width * rect.height) - count), avg);
+    //printf("Sum: %lf, Count: %lu, Questo: %lf, Rst: %lf\n", sum, count, (double) ((rect.width * rect.height) - count), avg);
 
     if (avg < 0 || std::isnan(avg)) {
-        printf("Avg: Nan!\n");
+        //printf("Avg: Nan!\n");
         return -1;
     }
 
