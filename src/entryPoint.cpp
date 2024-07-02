@@ -1,10 +1,32 @@
 #include <pickingPoint.hpp>
 #include <timer.hpp>
 #include <filesystem>
+#include <vector>
+#include <unordered_map>
+
+inline const char* GetClassName(unsigned int class_id)
+{
+    switch(class_id){
+        case 7:
+            return "Chiave";
+        case 3:
+            return "Vite";
+        case 2:
+            return "Dado";
+        case 1:
+            return "Ugello";
+        case 0:
+            return "Tubo";
+        default:
+            return "Unknown";
+    }
+}
 
 int main(int argc, char** argv)
 {
     std::string mask_path = "assets/masks";
+
+    std::map<unsigned int, std::vector<double>> object_class_times;
 
     for(const auto& mask_entry : std::filesystem::directory_iterator(mask_path))
     {
@@ -72,6 +94,10 @@ int main(int argc, char** argv)
 
             PickingPoint pickingPoint;
             points.push_back(pickingPoint.Process(entry.path(), tmp2, output_folder));
+
+            unsigned int object_class = std::stoi(tmp2.substr(tmp2.find_last_of('_') + 1, tmp2.find_last_of('_') - tmp2.find_last_of('.')));
+        
+            object_class_times[object_class].push_back(timer.ElapsedMillis());
         }
 
         std::sort(points.begin(), points.end(), [](const auto& p1, const auto& p2) {
@@ -96,6 +122,56 @@ int main(int argc, char** argv)
 
         cv::imwrite("output/" + mask_entry.path().filename().string() + ".png", colorImage);
     }
+
+    for(const auto& [object_class, times] : object_class_times)
+    {
+        double sum = 0.0;
+        double min_time = std::numeric_limits<double>::max();
+        double max_time = 0.0;
+
+        for(const auto& time : times)
+        {
+            sum += time;
+            min_time = std::min(min_time, time);
+            max_time = std::max(max_time, time);
+        }
+
+        double avgTime = sum / (double) times.size();
+        std::string preStr = std::to_string(avgTime);
+        std::string rstStr;
+        if (avgTime > 90) {
+            rstStr = "\033[0;91m" + preStr + "\033[0m";
+        } else if (avgTime > 70) {
+            rstStr = "\033[0;31m" + preStr + "\033[0m";
+        } else {
+            rstStr = "\033[0;32m" + preStr + "\033[0m";
+        }
+
+        std::string preStr2 = std::to_string(min_time);
+        std::string rstStr2;
+        if (min_time > 70) {
+            rstStr2 = "\033[0;91m" + preStr2 + "\033[0m";
+        } else if (min_time > 50) {
+            rstStr2 = "\033[0;31m" + preStr2 + "\033[0m";
+        } else {
+            rstStr2 = "\033[0;32m" + preStr2 + "\033[0m";
+        }
+
+        std::string preStr3 = std::to_string(max_time);
+        std::string rstStr3;
+        if (max_time > 110) {
+            rstStr3 = "\033[0;91m" + preStr3 + "\033[0m";
+        } else if (max_time > 85) {
+            rstStr3 = "\033[0;31m" + preStr3 + "\033[0m";
+        } else {
+            rstStr3 = "\033[0;32m" + preStr3 + "\033[0m";
+        }
+
+        printf("Object of class \033[0;34m%s\033[0m has an average time of %s ms, min time of %s ms, and max time of %s ms\n", GetClassName(object_class), rstStr.c_str(), rstStr2.c_str(), rstStr3.c_str());
+    }
+
+    // Reset terminal color
+    printf("\033[0m");
 
     return 0;
 }

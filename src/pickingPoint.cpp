@@ -58,18 +58,11 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         cv::swap(rect_size.width, rect_size.height);
     }
 
-    printf("Before Rotation\n");
-
     m_Cropped = cv::Mat(rect_size, m_Image.type());
     getRotRectImg(rect, m_Image, m_Cropped);
 
-    printf("Half Rotation\n");
-    printf("Size: %d %d\n", rect_size, m_DepthMap.type());
-
     m_DepthCropped = cv::Mat(rect_size, m_DepthMap.type());
     getRotRectImg(rect, m_DepthMap, m_DepthCropped);
-
-    printf("After Rotation\n");
 
 
     /* Normalization:
@@ -99,8 +92,6 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         }
     }
 
-    printf("Min Depth: %u Max Depth: %u\n", min_depth, max_depth);
-
     // Normalizing the depth map
     m_DepthCroppedNormalized = cv::Mat::zeros(m_DepthCropped.size(), m_DepthCropped.type());
 
@@ -123,7 +114,6 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
     m_DepthCroppedNormalized.convertTo(Depth_Converted, CV_8UC1);
 
     cv::Mat Output;
-    printf("Size: %d %d\n", Depth_Converted.rows, Depth_Converted.cols);
     cv::applyColorMap(Depth_Converted, Output, cv::COLORMAP_JET);
 
     cv::imwrite(output_folder + std::string("/depth_colored_") + path.substr(path.find_last_of("/") + 1), Output);
@@ -133,8 +123,6 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
 
     // Extract cells
     int cell_size = std::max((int) std::ceil(std::log10(m_Cropped.rows * m_Cropped.cols) * 2), 1);
-
-    printf("Cell Size: %d\n", cell_size);
 
     ExtractCells(cell_size, m_Cropped);
 
@@ -157,8 +145,6 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
     
     cv::Point pickPoint = cv::Point(r.x + r.width / 2, r.y + r.height / 2);
 
-    printf("Picking Point: (%d, %d)\n", pickPoint.x, pickPoint.y);
-
     //cv::circle(Output, pickPoint, 2, cv::Scalar(255, 255, 255), -1);
 
     cv::Point y0 = Raycast(pickPoint, cv::Point(0, 1)); // up
@@ -173,9 +159,7 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
     }
 
-    printf("Picking Point 2: (%d, %d)\n", pickPoint.x, pickPoint.y);
-
-    //DrawHeatMap(path, output_folder); //da fixare (crasha)
+    DrawHeatMap(path, output_folder); //da fixare (crasha)
 
     unsigned int requiredOpening1; // opening for the shortest side
     unsigned int requiredOpening2; // opening for the longest side
@@ -340,7 +324,7 @@ void PickingPoint::ExtractCells(size_t cell_size, cv::Mat img)
 std::pair<size_t, size_t> PickingPoint::FindMaxCell()
 {
     double min_value = std::numeric_limits<double>::min();
-    size_t x, y; 
+    size_t x = 0, y = 0; 
 
     for(size_t i = 0; i < m_Cells.size(); i++)
     {
@@ -413,6 +397,7 @@ void PickingPoint::DrawHeatMap(const std::string& path, const std::string& outpu
     m_HeatMap = m_Cropped.clone();
 
     std::pair<size_t, size_t> max_cell = FindMaxCell();
+    printf("Max Cell: %lu %lu\n", max_cell.first, max_cell.second);
     auto cell = m_Cells[max_cell.first][max_cell.second];
     double maxValue = cell.first;
 

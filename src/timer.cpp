@@ -14,3 +14,10 @@ Timer::~Timer()
     float ms = duration.count() * 1000.0f;
     printf("\033[1;32mElapsed time: %f ms\033[0m\n", ms);
 }
+
+double Timer::ElapsedMillis() 
+{
+    std::chrono::time_point<std::chrono::high_resolution_clock> stop = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = stop - m_Start;
+    return duration.count() * 1000.0;
+}

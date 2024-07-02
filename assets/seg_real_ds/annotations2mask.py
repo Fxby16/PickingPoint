@@ -13,10 +13,16 @@ def main(args):
 	with open(args.txt, 'r') as f:
 		labels = f.readlines()
 		print('readlines',len(labels))
+
+		if not os.path.exists("../masks/" + image_path):
+			os.mkdir("../masks/" + image_path)
 	i=0
 	for label in labels:
 		print('label: ', len(label))
 		print('class', label[0])
+
+		class_ = label[0]
+
 		print('label type', type(label))
 		print('CLASS:\n', label[0])
 		label = label[2:-2].split(' ')
@@ -60,7 +66,7 @@ def main(args):
 		c = [[[int(pair[0]*im.shape[1]), int(pair[1]*im.shape[0])] for pair in det] for det in c]
 
 		# print(c[0][1])
-		# print(c[0])
+		# print(c[0]) 
 		
 		mask_true = cv2.drawContours(im, [np.array(c)], 0, (255,0,0), 3 )
 		mask_bin = cv2.drawContours(mask_bin, [np.array(c)], 0, (255,0,0), 3 )
@@ -71,7 +77,7 @@ def main(args):
 
 		#cv2.imshow('check mask', mask_bin)
 		#cv2.waitKey(0)
-		cv2.imwrite(f'{image_path}_mask_{i}.png', mask_bin)
+		cv2.imwrite('../masks/' + image_path + '/' + f'{image_path}_mask_{i}_{class_}.png', mask_bin)
 		i+=1
 
 
