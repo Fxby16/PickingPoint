@@ -251,6 +251,8 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
     // Draw the heatmap
     DrawHeatMap(path, output_folder);
 
+    cv::imwrite(output_folder + std::string("/cropped_") + path.substr(path.find_last_of("/") + 1), m_Cropped);
+
     //10 : 15 = cell_size : x
     size_t cells_to_get = std::max((8 * cell_size) / 10, 1);
 
@@ -261,29 +263,16 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
     //center the point in the cell
     cv::Point pickPoint = cv::Point(r.x + r.width / 2, r.y + r.height / 2);
 
-    //raycast without considering the depth
-    cv::Point y0 = Raycast(pickPoint, cv::Point(0, 1)); // up
-    cv::Point y1 = Raycast(pickPoint, cv::Point(0, -1)); // down
-    cv::Point x0 = Raycast(pickPoint, cv::Point(1, 0)); // right
-    cv::Point x1 = Raycast(pickPoint, cv::Point(-1, 0)); // left
-
-    //center the point on the shortest side
-    if(std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x)){
-        pickPoint = cv::Point((x0.x + x1.x) / 2, pickPoint.y);
-    }else{
-        pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
-    }
-
     unsigned int requiredOpening1; // opening for the shortest side
     unsigned int requiredOpening2; // opening for the longest side
     float requiredAngle1 = requiredAngle; // angle for the shortest opening
     float requiredAngle2 = requiredAngle; // angle for the longest opening
 
     //raycast considering the depth
-    y0 = Raycast(pickPoint, cv::Point(0, 1), true); // up
-    y1 = Raycast(pickPoint, cv::Point(0, -1), true); // down
-    x0 = Raycast(pickPoint, cv::Point(1, 0), true); // right
-    x1 = Raycast(pickPoint, cv::Point(-1, 0), true); // left
+    cv::Point y0 = Raycast(pickPoint, cv::Point(0, 1), true); // up
+    cv::Point y1 = Raycast(pickPoint, cv::Point(0, -1), true); // down
+    cv::Point x0 = Raycast(pickPoint, cv::Point(1, 0), true); // right
+    cv::Point x1 = Raycast(pickPoint, cv::Point(-1, 0), true); // left
 
     //center the point on the shortest side, find the required opening and angle
     if(std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x)){
@@ -490,7 +479,7 @@ cv::Point PickingPoint::Raycast(cv::Point startingPoint, cv::Point direction, bo
 
         if (useDepth) {
             cv::Vec3f depth = m_DepthCropped.at<cv::Vec3f>(currentPoint)[2];
-            if (std::abs(depth[2] - oldDepth[2]) > 30) {
+            if (std::abs(depth[2] - oldDepth[2]) > 10) {
                 return savedPoint;
             }
 
@@ -520,7 +509,14 @@ void PickingPoint::DrawHeatMap(const std::string& name, const std::string& outpu
     {
         for(size_t j = 0; j < m_Cells[i].size(); j++)
         {
-            cv::rectangle(m_HeatMap, m_Cells[i][j].second, cv::Scalar(0, 0, (m_Cells[i][j].first * 255) / maxValue), -1);
+            unsigned int color = m_Cells[i][j].first;
+
+            if(m_Cells[i][j].first == std::numeric_limits<double>::max())
+            {
+                color = 0;
+            }
+
+            cv::rectangle(m_HeatMap, m_Cells[i][j].second, cv::Scalar(0, 0, (color * 255.0) / maxValue), -1);
         }
     }
 
@@ -568,7 +564,7 @@ unsigned int PickingPoint::GetPixelCount(cv::Rect& rect, size_t row, size_t col)
         for(int j = rect.x; j < rect.x + rect.width; j++)
         {
             cv::Vec3b color = m_Cropped.at<cv::Vec3b>(i, j);
-            if(color[0] != 0 && color[1] != 0 && color[2] != 0)
+            if(color[0] != 0 || color[1] != 0 || color[2] != 0)
             {
                 count++;
             }
