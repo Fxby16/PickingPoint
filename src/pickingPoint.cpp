@@ -121,7 +121,7 @@ void PickingPoint::Start()
             rstStr3 = "\033[0;32m" + preStr3 + "\033[0m";
         }
 
-        printf("Object of class \033[0;34m%s\033[0m has an average time of %s ms, min time of %s ms, and max time of %s ms\n", GetClassName(object_class), rstStr.c_str(), rstStr2.c_str(), rstStr3.c_str());
+        printf("Class \033[0;34m%s\033[0m\nAverage time: %s ms\nMin time: %s ms\nMax time: %s ms\n", GetClassName(object_class), rstStr.c_str(), rstStr2.c_str(), rstStr3.c_str());
     }
 
     // Reset terminal color
@@ -269,10 +269,23 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
     float requiredAngle2 = requiredAngle; // angle for the longest opening
 
     //raycast considering the depth
-    cv::Point y0 = Raycast(pickPoint, cv::Point(0, 1), true); // up
-    cv::Point y1 = Raycast(pickPoint, cv::Point(0, -1), true); // down
-    cv::Point x0 = Raycast(pickPoint, cv::Point(1, 0), true); // right
-    cv::Point x1 = Raycast(pickPoint, cv::Point(-1, 0), true); // left
+    cv::Point y0 = Raycast(pickPoint, cv::Point(0, 1), true); // Sopra
+    cv::Point y1 = Raycast(pickPoint, cv::Point(0, -1), true); //sotto
+    cv::Point x0 = Raycast(pickPoint, cv::Point(1, 0), true); // destra
+    cv::Point x1 = Raycast(pickPoint, cv::Point(-1, 0), true); // sinistra
+
+    //center the point on the shortest side, find the required opening and angle
+    if(std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x)){
+        pickPoint = cv::Point((x0.x + x1.x) / 2, pickPoint.y);
+    }else{
+        pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
+    }
+
+    //raycast considering the depth
+    y0 = Raycast(pickPoint, cv::Point(0, 1), true); // Sopra
+    y1 = Raycast(pickPoint, cv::Point(0, -1), true); //sotto
+    x0 = Raycast(pickPoint, cv::Point(1, 0), true); // destra
+    x1 = Raycast(pickPoint, cv::Point(-1, 0), true); // sinistra
 
     //center the point on the shortest side, find the required opening and angle
     if(std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x)){
