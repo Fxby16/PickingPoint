@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 project( Application )
 
+# Create bin directory if missing
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 find_package( OpenCV REQUIRED )
 find_package(VTK REQUIRED)
 find_package(Iconv REQUIRED)

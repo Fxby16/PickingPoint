@@ -1,16 +1,137 @@
 #include <pickingPoint.hpp>
+#include <utils.hpp>
+#include <timer.hpp>
+
 #include <cstdio>
 #include <vector>
 #include <cmath>
 #include <limits>
-#include <iostream>
 #include <map>
-#include <utils.hpp>
+#include <filesystem>
+
+void PickingPoint::Start()
+{
+    std::string mask_path = "assets/masks";
+
+    std::map<unsigned int, std::vector<double>> object_class_times; // map to store the times for each object class (to get the average time for each class)
+
+    // Create output directory if it doesn't exist
+    if(!std::filesystem::exists("output")){
+        std::filesystem::create_directory("output");
+    }
+
+    //iterate over all the masks directories
+    for(const auto& mask_entry : std::filesystem::directory_iterator(mask_path))
+    {
+        //open the rgb image that contains all the objects
+        cv::Mat colorImage = cv::imread(mask_entry.path().string().replace(mask_entry.path().string().find("masks"), 5, "depth") + ".jpg", cv::IMREAD_COLOR);
+
+        // Save the picking point for each object
+        std::vector<std::pair<cv::Point, double>> points;
+
+        // Iterate over all the objects in the mask directory
+        for(const auto& entry : std::filesystem::directory_iterator(mask_entry.path()))
+        {
+            printf("Path: %s\n", entry.path().c_str());
+
+            std::string tmp = entry.path().string().replace(entry.path().string().find("masks"), 5, "depth_masked");
+            std::string tmp2 = tmp.replace(tmp.find_last_of("."), 4, ".exr");
+
+            std::string output_folder = "output/" + mask_entry.path().filename().string();
+
+            // Create output directory if it doesn't exist
+            if(!std::filesystem::exists(output_folder)){
+                std::filesystem::create_directory(output_folder);
+            }
+
+            Timer timer; // Timer to measure the time taken to process each object
+
+            PickingPoint pickingPoint;
+            points.push_back(pickingPoint.Process(entry.path(), tmp2, output_folder)); // Process the object and save the picking point
+
+            //extract the object class from the filename
+            unsigned int object_class = std::stoi(tmp2.substr(tmp2.find_last_of('_') + 1, tmp2.find_last_of('_') - tmp2.find_last_of('.')));
+        
+            //store the time taken to process the object in the respective object class vector
+            object_class_times[object_class].push_back(timer.ElapsedMillis());
+        }
+
+        // Sort the points based on the depth (lower depth first)
+        std::sort(points.begin(), points.end(), [](const auto& p1, const auto& p2) {
+            return p1.second < p2.second;
+        });
+
+        // Draw a green point for the first object to take
+        cv::circle(colorImage, points[0].first, 3, cv::Scalar(0, 255, 0), -1);
+        cv::putText(colorImage, std::to_string((int) points[0].second) + " " + "0", cv::Point(points[0].first.x + 5, points[0].first.y + 5), cv::FONT_HERSHEY_SIMPLEX, 0.3, cv::Scalar(255, 255, 255), 1);
+
+        // Draw a red point for the rest of the objects
+        for(int k = 1; k < points.size(); k++)
+        {
+            cv::circle(colorImage, points[k].first, 3, cv::Scalar(0, 0, 255), -1);
+            cv::putText(colorImage, std::to_string((int) points[k].second) + " " + std::to_string(k), cv::Point(points[k].first.x + 5, points[k].first.y + 5), cv::FONT_HERSHEY_SIMPLEX, 0.3, cv::Scalar(255, 255, 255), 1);
+        }
+
+        // Save the image with the picking points
+        cv::imwrite("output/" + mask_entry.path().filename().string() + ".png", colorImage);
+    }
+
+    // Calculate the average time for each object class
+    for(const auto& [object_class, times] : object_class_times)
+    {
+        double sum = 0.0;
+        double min_time = std::numeric_limits<double>::max();
+        double max_time = 0.0;
+
+        for(const auto& time : times)
+        {
+            sum += time;
+            min_time = std::min(min_time, time);
+            max_time = std::max(max_time, time);
+        }
+
+        double avgTime = sum / (double) times.size();
+        std::string preStr = std::to_string(avgTime);
+        std::string rstStr;
+        if (avgTime > 90) {
+            rstStr = "\033[0;91m" + preStr + "\033[0m";
+        } else if (avgTime > 70) {
+            rstStr = "\033[0;31m" + preStr + "\033[0m";
+        } else {
+            rstStr = "\033[0;32m" + preStr + "\033[0m";
+        }
+
+        std::string preStr2 = std::to_string(min_time);
+        std::string rstStr2;
+        if (min_time > 70) {
+            rstStr2 = "\033[0;91m" + preStr2 + "\033[0m";
+        } else if (min_time > 50) {
+            rstStr2 = "\033[0;31m" + preStr2 + "\033[0m";
+        } else {
+            rstStr2 = "\033[0;32m" + preStr2 + "\033[0m";
+        }
+
+        std::string preStr3 = std::to_string(max_time);
+        std::string rstStr3;
+        if (max_time > 110) {
+            rstStr3 = "\033[0;91m" + preStr3 + "\033[0m";
+        } else if (max_time > 85) {
+            rstStr3 = "\033[0;31m" + preStr3 + "\033[0m";
+        } else {
+            rstStr3 = "\033[0;32m" + preStr3 + "\033[0m";
+        }
+
+        printf("Object of class \033[0;34m%s\033[0m has an average time of %s ms, min time of %s ms, and max time of %s ms\n", GetClassName(object_class), rstStr.c_str(), rstStr2.c_str(), rstStr3.c_str());
+    }
+
+    // Reset terminal color
+    printf("\033[0m");
+}
 
 std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, const std::string& depth_path, const std::string& output_folder)
 {
-    m_Image = cv::imread(path, cv::IMREAD_COLOR);
-    m_DepthMap = cv::imread(depth_path, cv::IMREAD_UNCHANGED);
+    m_Image = cv::imread(path, cv::IMREAD_COLOR); //read the mask
+    m_DepthMap = cv::imread(depth_path, cv::IMREAD_UNCHANGED); //read the masked depth map
 
     if(m_Image.empty())
     {
@@ -41,8 +162,6 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
     cv::Point2f box[4];
     rect.points(box);
 
-    cv::Mat M, rotated, rotated2;
-
     // get angle and size from the bounding box
     float angle = rect.angle;
     float requiredAngle = rect.angle;
@@ -58,24 +177,18 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         cv::swap(rect_size.width, rect_size.height);
     }
 
+    // rotate and crop the mask
     m_Cropped = cv::Mat(rect_size, m_Image.type());
-    getRotRectImg(rect, m_Image, m_Cropped);
+    GetRotRectImg(rect, m_Image, m_Cropped);
 
+    // rotate and crop the depth map
     m_DepthCropped = cv::Mat(rect_size, m_DepthMap.type());
-    getRotRectImg(rect, m_DepthMap, m_DepthCropped);
+    GetRotRectImg(rect, m_DepthMap, m_DepthCropped);
 
 
-    /* Normalization:
- ________   ________  ________  _____ ______   ________  ___       ___  ________  ________  _________  ___  ________  ________      
-|\   ___  \|\   __  \|\   __  \|\   _ \  _   \|\   __  \|\  \     |\  \|\_____  \|\   __  \|\___   ___\\  \|\   __  \|\   ___  \    
-\ \  \\ \  \ \  \|\  \ \  \|\  \ \  \\\__\ \  \ \  \|\  \ \  \    \ \  \\|___/  /\ \  \|\  \|___ \  \_\ \  \ \  \|\  \ \  \\ \  \   
- \ \  \\ \  \ \  \\\  \ \   _  _\ \  \\|__| \  \ \   __  \ \  \    \ \  \   /  / /\ \   __  \   \ \  \ \ \  \ \  \\\  \ \  \\ \  \  
-  \ \  \\ \  \ \  \\\  \ \  \\  \\ \  \    \ \  \ \  \ \  \ \  \____\ \  \ /  /_/__\ \  \ \  \   \ \  \ \ \  \ \  \\\  \ \  \\ \  \ 
-   \ \__\\ \__\ \_______\ \__\\ _\\ \__\    \ \__\ \__\ \__\ \_______\ \__\\________\ \__\ \__\   \ \__\ \ \__\ \_______\ \__\\ \__\
-    \|__| \|__|\|_______|\|__|\|__|\|__|     \|__|\|__|\|__|\|_______|\|__|\|_______|\|__|\|__|    \|__|  \|__|\|_______|\|__| \|__|                                                                                                     
-*/
+    // NORMALIZATION
 
-    // Finding the min depth for normalization
+    // Finding the min and max depth for normalization
     unsigned int min_depth = std::numeric_limits<unsigned int>::max(), max_depth = 0;
 
     for(int i = 0; i < m_DepthCropped.rows; i++)
@@ -92,7 +205,7 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         }
     }
 
-    // Normalizing the depth map
+    // Normalize the depth map
     m_DepthCroppedNormalized = cv::Mat::zeros(m_DepthCropped.size(), m_DepthCropped.type());
 
     for(int i = 0; i < m_DepthCropped.rows; i++)
@@ -109,7 +222,7 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         }
     }
 
-    // Converting the normalized map to a 8-bit image, and applying a rainbow colormap
+    // Convert the normalized map to a 8-bit image, and apply a colormap
     cv::Mat Depth_Converted;
     m_DepthCroppedNormalized.convertTo(Depth_Converted, CV_8UC1);
 
@@ -135,18 +248,20 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         }
     }
 
+    // Draw the heatmap
+    DrawHeatMap(path, output_folder);
+
     //10 : 15 = cell_size : x
     size_t cells_to_get = std::max((8 * cell_size) / 10, 1);
 
-    // Finding the first 10 cells with the lowest score
+    // Finding the cell with the lowest score
     std::vector<PickingPoint::Cell> min_cell_list = FindMinCell(1);
-
     cv::Rect r = m_Cells[min_cell_list[0].y][min_cell_list[0].x].second;
     
+    //center the point in the cell
     cv::Point pickPoint = cv::Point(r.x + r.width / 2, r.y + r.height / 2);
 
-    //cv::circle(Output, pickPoint, 2, cv::Scalar(255, 255, 255), -1);
-
+    //raycast without considering the depth
     cv::Point y0 = Raycast(pickPoint, cv::Point(0, 1)); // up
     cv::Point y1 = Raycast(pickPoint, cv::Point(0, -1)); // down
     cv::Point x0 = Raycast(pickPoint, cv::Point(1, 0)); // right
@@ -159,18 +274,18 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         pickPoint = cv::Point(pickPoint.x, (y0.y + y1.y) / 2);
     }
 
-    DrawHeatMap(path, output_folder); //da fixare (crasha)
-
     unsigned int requiredOpening1; // opening for the shortest side
     unsigned int requiredOpening2; // opening for the longest side
     float requiredAngle1 = requiredAngle; // angle for the shortest opening
     float requiredAngle2 = requiredAngle; // angle for the longest opening
 
-    y0 = Raycast(pickPoint, cv::Point(0, 1), true); // Sopra
-    y1 = Raycast(pickPoint, cv::Point(0, -1), true); //sotto
-    x0 = Raycast(pickPoint, cv::Point(1, 0), true); // destra
-    x1 = Raycast(pickPoint, cv::Point(-1, 0), true); // sinistra
+    //raycast considering the depth
+    y0 = Raycast(pickPoint, cv::Point(0, 1), true); // up
+    y1 = Raycast(pickPoint, cv::Point(0, -1), true); // down
+    x0 = Raycast(pickPoint, cv::Point(1, 0), true); // right
+    x1 = Raycast(pickPoint, cv::Point(-1, 0), true); // left
 
+    //center the point on the shortest side, find the required opening and angle
     if(std::abs(y0.y - y1.y) > std::abs(x0.x - x1.x)){
         requiredOpening1 = std::abs(x0.x - x1.x) + 6;
         requiredOpening2 = std::abs(y0.y - y1.y) + 6;
@@ -185,30 +300,35 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
 
     printf("Required Opening 1: %u Angle1: %f\nRequired Opening 2: %u Angle2: %f\n", requiredOpening1, requiredAngle1, requiredOpening2, requiredAngle2);
 
+    //draw the point on the image
     cv::circle(m_Cropped, pickPoint, 1, cv::Scalar(0, 0, 255), -1);
     cv::circle(Output, pickPoint, 1, cv::Scalar(0, 0, 255), -1);
 
+    //revert the changes made at the beginning
     cv::Mat dstDepth;
-    revertRotation(m_DepthCropped, dstDepth, m_Image.size(), rect, rect_size);
+    RevertRotation(m_DepthCropped, dstDepth, m_Image.size(), rect, rect_size);
     
     cv::Mat dstImage;
-    revertRotation(m_Cropped, dstImage, m_Image.size(), rect, rect_size);
+    RevertRotation(m_Cropped, dstImage, m_Image.size(), rect, rect_size);
 
+    //find the picking point on the original image
     cv::Point newPickingPoint = FindColor(cv::Scalar(0, 0, 255), dstImage); //find the picking point on the original image
 
     printf("New Picking Point: (%d, %d)\n", newPickingPoint.x, newPickingPoint.y);
 
+    //draw the point on the original image
     cv::circle(dstDepth, newPickingPoint, 1, cv::Scalar(0, 255, 0), -1);
 
+    //save the images
     cv::imwrite(output_folder + std::string("/result_") + path.substr(path.find_last_of("/") + 1), dstImage);
     cv::imwrite(output_folder + path.substr(path.find_last_of("/")), m_Cropped);
     cv::imwrite(output_folder + std::string("/depth_") + path.substr(path.find_last_of("/") + 1), dstDepth);
-
+    cv::imwrite(output_folder + std::string("/depthCropped_") + path.substr(path.find_last_of("/") + 1) + std::string(".exr"), m_DepthCropped);
+    
     size_t count = 0;
     double avgDepth = 0.0;
 
-    cv::imwrite(output_folder + std::string("/depthCropped_") + path.substr(path.find_last_of("/") + 1) + std::string(".exr"), m_DepthCropped);
-
+    //calculate the average depth of the object
     for(auto row : m_Cells)
     {
         for(auto cell : row)
@@ -224,17 +344,11 @@ std::pair<cv::Point, double> PickingPoint::Process(const std::string& path, cons
         }
     }
 
-
-
-    //printf("[Prima] Value: %lf, avgDepth: %lf\n", (double) ((m_Cells.size() * m_Cells[0].size()) - count), avgDepth);
-
     avgDepth /= (double) ((m_Cells.size() * m_Cells[0].size()) - count);
 
     if (avgDepth <= 0 || avgDepth > 1000 || std::isnan(avgDepth) || std::isinf(avgDepth)) {
         avgDepth = 500;
     }
-
-    //printf("Value: %lf, avgDepth: %lf\n", (double) ((m_Cells.size() * m_Cells[0].size()) - count), avgDepth);
 
     return {newPickingPoint, avgDepth};
 }
@@ -393,7 +507,7 @@ cv::Point PickingPoint::Raycast(cv::Point startingPoint, cv::Point direction, bo
     return savedPoint;
 }
 
-void PickingPoint::DrawHeatMap(const std::string& path, const std::string& output_folder) {
+void PickingPoint::DrawHeatMap(const std::string& name, const std::string& output_folder) {
     m_HeatMap = m_Cropped.clone();
 
     std::pair<size_t, size_t> max_cell = FindMaxCell();
@@ -410,12 +524,9 @@ void PickingPoint::DrawHeatMap(const std::string& path, const std::string& outpu
         }
     }
 
-    cv::imwrite(output_folder + std::string("/heatmap_") + path.substr(path.find_last_of("/") + 1), m_HeatMap);
+    cv::imwrite(output_folder + std::string("/heatmap_") + name.substr(name.find_last_of("/") + 1), m_HeatMap);
 }
 
-
-// Non Ottimizzato: 4.572s
-// Ottimizzato: 2.514s
 void PickingPoint::HandleCell(std::pair<double, cv::Rect>& cell, int row, int col)
 {
     if(GetPixelCount(m_Cells[row][col].second, row, col) == 0)
@@ -431,36 +542,6 @@ void PickingPoint::HandleCell(std::pair<double, cv::Rect>& cell, int row, int co
             cell.first += GetPixelCount(m_Cells[i][j].second, i, j) * GetDistance(row, col, i, j);
         }
     }
-
-    //cell.first /= std::max((double) GetMinDepth(m_Cells[row][col].second, row, col), 1.0);
-}
-
-unsigned int PickingPoint::GetMinDepth(cv::Rect& rect, size_t row, size_t col) {
-
-    if(m_DepthCache[row][col] != std::numeric_limits<unsigned int>::max())
-    {
-        return m_DepthCache[row][col];
-    }
-
-    float min_val = std::numeric_limits<float>::max(), max_val = 0;
-
-    for(int i = rect.y; i < rect.y + rect.height; i++)
-    {
-        for(int j = rect.x; j < rect.x + rect.width; j++)
-        {
-            float value = m_DepthCropped.at<cv::Vec3f>(i, j)[2];
-
-            if(value < 250){
-                value = 1000;
-            }
-
-            m_DepthCache[row][col] += value;
-        }
-    }
-
-    m_DepthCache[row][col] /= (rect.width * rect.height);
-
-    return m_DepthCache[row][col];
 }
 
 double PickingPoint::GetDistance(int x1, int y1, int x2, int y2)
@@ -581,10 +662,7 @@ double PickingPoint::GetAvgDepth(cv::Rect& rect)
 
     double avg = sum / (double) ((rect.width * rect.height) - count);
 
-    //printf("Sum: %lf, Count: %lu, Questo: %lf, Rst: %lf\n", sum, count, (double) ((rect.width * rect.height) - count), avg);
-
-    if (avg < 0 || std::isnan(avg)) {
-        //printf("Avg: Nan!\n");
+    if(avg < 0 || std::isnan(avg)){
         return -1;
     }
 
