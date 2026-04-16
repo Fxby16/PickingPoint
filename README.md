@@ -1,6 +1,9 @@
 # Picking Point
 Algorithm to get the best picking point given a mask and a depth map 
 
+## Presentation
+This project includes a detailed explanation in the accompanying PDF document. Please refer to [Picking_Point.pdf](presentation/Picking_Point.pdf) for more information.
+
 ## Dependencies
 `OpenCV, builded with OpenEXR  enabled`   
 `VTK`  
